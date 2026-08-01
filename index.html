@@ -366,7 +366,9 @@
                 </div>
             </form>
         </div>
-        <div id="modalWeather" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50 p-4">
+      
+    </div>
+      <div id="modalWeather" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50 p-4">
     <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
         <div class="flex justify-between items-center border-b pb-2">
             <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
@@ -385,8 +387,6 @@
         </div>
     </div>
 </div>
-    </div>
-
 
     <!-- SCRIPT DE LÓGICA COMPLETA -->
     <script>
@@ -1104,32 +1104,32 @@
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
         }
-        // --- PREVISÃO DO TEMPO ---
-async function openWeatherModal() {
+  async function openWeatherModal() {
     const trip = getCurrentTrip();
     if (!trip) return alert('Selecione ou crie uma viagem primeiro!');
 
     const container = document.getElementById('weatherContent');
+    const modal = document.getElementById('modalWeather');
+
+    if (!container || !modal) return alert('Modal do clima não encontrado no HTML!');
+
     container.innerHTML = `<p class="text-slate-500 text-sm flex items-center gap-2"><i class="fa-solid fa-spinner fa-spin text-sky-500"></i> Buscando clima de ${escapeHtml(trip.name)}...</p>`;
-    document.getElementById('modalWeather').classList.remove('hidden');
+    modal.classList.remove('hidden');
 
     try {
-        // 1. Busca latitude/longitude do destino usando a API da Open-Meteo
         const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(trip.name)}&count=1&language=pt`);
         const geoData = await geoRes.json();
 
         if (!geoData.results || geoData.results.length === 0) {
-            container.innerHTML = `<p class="text-rose-500 text-sm">Não foi possível encontrar a localização para "${escapeHtml(trip.name)}". Verifique o nome do destino.</p>`;
+            container.innerHTML = `<p class="text-rose-500 text-sm text-center">Não foi possível encontrar a localização para "${escapeHtml(trip.name)}". Verifique o nome do destino.</p>`;
             return;
         }
 
         const { latitude, longitude, name, country } = geoData.results[0];
 
-        // 2. Busca a previsão para os próximos 7 dias
         const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto`);
         const weatherData = await weatherRes.json();
 
-        // Mapeamento de códigos de clima básicos
         const getWeatherDesc = (code) => {
             if (code === 0) return { desc: 'Céu Limpo', icon: 'fa-sun text-amber-500' };
             if (code <= 3) return { desc: 'Parcialmente Nublado', icon: 'fa-cloud-sun text-amber-400' };
@@ -1166,7 +1166,7 @@ async function openWeatherModal() {
         container.innerHTML = html;
 
     } catch (err) {
-        container.innerHTML = `<p class="text-rose-500 text-sm">Erro ao carregar a previsão do tempo. Verifique sua conexão.</p>`;
+        container.innerHTML = `<p class="text-rose-500 text-sm text-center">Erro ao carregar a previsão do tempo. Verifique a sua ligação.</p>`;
     }
 }
     </script>
