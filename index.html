@@ -372,53 +372,15 @@
         // INICIALIZAÇÃO
         window.addEventListener('DOMContentLoaded', () => {
             if (trips.length === 0) {
-                // Criar viagem de exemplo
-                const sampleTrip = {
-                    id: 'trip_' + Date.now(),
-                    name: 'Exemplo: Rio de Janeiro',
-                    startDate: '2026-11-10',
-                    endDate: '2026-11-15',
-                    hotels: [{
-                        id: 'h1',
-                        name: 'Hotel Copacabana Palace',
-                        address: 'Av. Atlântica, 1702 - Copacabana',
-                        checkin: '2026-11-10T14:00',
-                        checkout: '2026-11-15T12:00',
-                        notes: 'Reserva Booking #98765',
-                        status: 'Reservado'
-                    }],
-                    activities: [{
-                        id: 'a1',
-                        title: 'Bondinho Pão de Açúcar',
-                        datetime: '2026-11-11T10:00',
-                        url: 'https://www.bondinho.com.br',
-                        price: '160.00',
-                        status: 'Comprado'
-                    }],
-                    schedule: [{
-                        id: 's1',
-                        date: '2026-11-11',
-                        time: '10:00',
-                        title: 'Visita ao Pão de Açúcar',
-                        notes: 'Ir de Uber. Levar óculos de sol.'
-                    }],
-                    checklist: [
-                        { id: 'c1', title: 'Passaporte / RG', category: 'docs', checked: true, status: 'Já Tenho' },
-                        { id: 'c2', title: 'Carregador do Celular', category: 'outros', checked: false, status: 'Já Tenho' },
-                        { id: 'c3', title: 'Protetor Solar FPS 50', category: 'outros', checked: false, status: 'A Comprar' }
-                    ]
-                };
-                trips.push(sampleTrip);
-                currentTripId = sampleTrip.id;
-                saveToLocalStorage();
+                // Se não existir nenhuma viagem, abre o modal automaticamente para criar a primeira
+                openNewTripModal();
+            } else {
+                if (!currentTripId || !trips.some(t => t.id === currentTripId)) {
+                    currentTripId = trips[0].id;
+                }
+                renderTripSelector();
+                renderCurrentTrip();
             }
-
-            if (!currentTripId && trips.length > 0) {
-                currentTripId = trips[0].id;
-            }
-
-            renderTripSelector();
-            renderCurrentTrip();
         });
 
         // NAVEGAÇÃO DE ABAS
@@ -486,23 +448,43 @@
         }
 
         function deleteCurrentTrip() {
-            if (trips.length <= 1) {
-                alert('Você precisa ter pelo menos uma viagem salva!');
-                return;
-            }
+            if (trips.length === 0) return;
+
             if (confirm('Tem certeza que deseja excluir esta viagem inteira?')) {
                 trips = trips.filter(t => t.id !== currentTripId);
-                currentTripId = trips[0].id;
+                if (trips.length > 0) {
+                    currentTripId = trips[0].id;
+                } else {
+                    currentTripId = null;
+                }
                 saveToLocalStorage();
-                renderTripSelector();
-                renderCurrentTrip();
+                
+                if (trips.length === 0) {
+                    openNewTripModal();
+                    document.getElementById('tripSelect').innerHTML = '';
+                    document.getElementById('tripSummary').innerHTML = '<span class="text-slate-400">Nenhuma viagem cadastrada.</span>';
+                    renderHotels();
+                    renderActivities();
+                    renderSchedule();
+                    renderChecklist();
+                } else {
+                    renderTripSelector();
+                    renderCurrentTrip();
+                }
             }
         }
 
         // RENDERIZAÇÃO DA VIAGEM ATUAL
         function renderCurrentTrip() {
             const trip = getCurrentTrip();
-            if (!trip) return;
+            if (!trip) {
+                document.getElementById('tripSummary').innerHTML = '<span class="text-slate-400">Nenhuma viagem selecionada.</span>';
+                renderHotels();
+                renderActivities();
+                renderSchedule();
+                renderChecklist();
+                return;
+            }
 
             // Summary
             const startFormatted = trip.startDate ? new Date(trip.startDate + 'T00:00').toLocaleDateString('pt-BR') : 'A definir';
@@ -526,12 +508,14 @@
 
         // --- ABA 1: HOSPEDAGENS ---
         function openHotelModal() {
+            if (!getCurrentTrip()) return alert('Crie uma viagem primeiro!');
             document.getElementById('modalHotel').classList.remove('hidden');
         }
 
         function saveHotel(e) {
             e.preventDefault();
             const trip = getCurrentTrip();
+            if (!trip) return;
             trip.hotels.push({
                 id: 'hotel_' + Date.now(),
                 name: document.getElementById('hotelName').value,
@@ -549,6 +533,7 @@
 
         function deleteHotel(id) {
             const trip = getCurrentTrip();
+            if (!trip) return;
             trip.hotels = trip.hotels.filter(h => h.id !== id);
             saveToLocalStorage();
             renderHotels();
@@ -559,7 +544,7 @@
             const trip = getCurrentTrip();
             list.innerHTML = '';
 
-            if (trip.hotels.length === 0) {
+            if (!trip || trip.hotels.length === 0) {
                 list.innerHTML = `<div class="col-span-2 text-center py-8 text-slate-400 border border-dashed rounded-xl">Nenhuma hospedagem adicionada ainda.</div>`;
                 return;
             }
@@ -608,12 +593,14 @@
 
         // --- ABA 2: PASSEIOS & INGRESSOS ---
         function openActivityModal() {
+            if (!getCurrentTrip()) return alert('Crie uma viagem primeiro!');
             document.getElementById('modalActivity').classList.remove('hidden');
         }
 
         function saveActivity(e) {
             e.preventDefault();
             const trip = getCurrentTrip();
+            if (!trip) return;
             trip.activities.push({
                 id: 'act_' + Date.now(),
                 title: document.getElementById('actTitle').value,
@@ -630,6 +617,7 @@
 
         function deleteActivity(id) {
             const trip = getCurrentTrip();
+            if (!trip) return;
             trip.activities = trip.activities.filter(a => a.id !== id);
             saveToLocalStorage();
             renderActivities();
@@ -640,7 +628,7 @@
             const trip = getCurrentTrip();
             table.innerHTML = '';
 
-            if (trip.activities.length === 0) {
+            if (!trip || trip.activities.length === 0) {
                 table.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Nenhum passeio cadastrado.</td></tr>`;
                 return;
             }
@@ -680,12 +668,14 @@
 
         // --- ABA 3: ROTEIRO DIÁRIO ---
         function openScheduleModal() {
+            if (!getCurrentTrip()) return alert('Crie uma viagem primeiro!');
             document.getElementById('modalSchedule').classList.remove('hidden');
         }
 
         function saveSchedule(e) {
             e.preventDefault();
             const trip = getCurrentTrip();
+            if (!trip) return;
             trip.schedule.push({
                 id: 'sch_' + Date.now(),
                 date: document.getElementById('schDate').value,
@@ -702,6 +692,7 @@
 
         function deleteSchedule(id) {
             const trip = getCurrentTrip();
+            if (!trip) return;
             trip.schedule = trip.schedule.filter(s => s.id !== id);
             saveToLocalStorage();
             renderSchedule();
@@ -712,7 +703,7 @@
             const trip = getCurrentTrip();
             timeline.innerHTML = '';
 
-            if (trip.schedule.length === 0) {
+            if (!trip || trip.schedule.length === 0) {
                 timeline.innerHTML = `<div class="text-center py-8 text-slate-400 border border-dashed rounded-xl">Nenhum compromisso agendado no cronograma.</div>`;
                 return;
             }
@@ -755,12 +746,14 @@
 
         // --- ABA 4: CHECKLIST ---
         function openChecklistModal() {
+            if (!getCurrentTrip()) return alert('Crie uma viagem primeiro!');
             document.getElementById('modalChecklist').classList.remove('hidden');
         }
 
         function saveChecklistItem(e) {
             e.preventDefault();
             const trip = getCurrentTrip();
+            if (!trip) return;
             trip.checklist.push({
                 id: 'chk_' + Date.now(),
                 title: document.getElementById('chkTitle').value,
@@ -776,6 +769,7 @@
 
         function toggleChecklist(id) {
             const trip = getCurrentTrip();
+            if (!trip) return;
             const item = trip.checklist.find(c => c.id === id);
             if (item) {
                 item.checked = !item.checked;
@@ -786,6 +780,7 @@
 
         function deleteChecklist(id) {
             const trip = getCurrentTrip();
+            if (!trip) return;
             trip.checklist = trip.checklist.filter(c => c.id !== id);
             saveToLocalStorage();
             renderChecklist();
@@ -793,6 +788,8 @@
 
         function addDefaultChecklist() {
             const trip = getCurrentTrip();
+            if (!trip) return alert('Crie uma viagem primeiro!');
+
             const defaults = [
                 { id: 'c_d1', title: 'Passaporte / RG', category: 'docs', status: 'Já Tenho', checked: false },
                 { id: 'c_d2', title: 'Cartão de Crédito / Dinheiro', category: 'docs', status: 'Já Tenho', checked: false },
@@ -821,6 +818,12 @@
             categories.forEach(cat => {
                 const container = document.getElementById('checklist-' + cat);
                 container.innerHTML = '';
+                
+                if (!trip) {
+                    container.innerHTML = `<p class="text-xs text-slate-400 italic">Vazio</p>`;
+                    return;
+                }
+
                 const items = trip.checklist.filter(c => c.category === cat);
 
                 if (items.length === 0) {
