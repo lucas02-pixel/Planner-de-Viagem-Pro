@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Planner de Viagem Completo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .active-tab {
+            border-bottom: 3px solid #3b82f6;
+            color: #1d4ed8;
+            font-weight: 600;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-indigo-700 text-white shadow-lg">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-plane-departure text-2xl text-yellow-400"></i>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">Planner de Viagem Pro</h1>
+                    <p class="text-xs text-indigo-200">Organizador completo com salvamento local</p>
+                </div>
+            </div>
+            
+            <!-- Selector de Viagem / Nova Viagem -->
+            <div class="flex items-center gap-2 w-full md:w-auto">
+                <select id="tripSelect" onchange="changeTrip()" class="bg-indigo-800 text-white border border-indigo-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 flex-grow md:flex-grow-0">
+                    <!-- Opções geradas via JS -->
+                </select>
+                <button onclick="openNewTripModal()" class="bg-yellow-400 hover:bg-yellow-300 text-indigo-900 font-bold px-3 py-2 rounded-lg text-sm flex items-center gap-1 transition shadow">
+                    <i class="fa-solid fa-plus"></i> Nova
+                </button>
+                <button onclick="deleteCurrentTrip()" title="Excluir Viagem Atual" class="bg-red-500/20 hover:bg-red-500 text-red-200 hover:text-white p-2 rounded-lg text-sm transition">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sub-header Dados da Viagem -->
+    <section class="bg-white border-b border-slate-200 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4 text-sm" id="tripSummary">
+            <!-- Informações resumidas da viagem ativa -->
+        </div>
+    </section>
+
+    <!-- Navegação por Abas -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-xs">
+        <div class="max-w-6xl mx-auto px-4 flex overflow-x-auto space-x-8 text-sm text-slate-600 custom-scrollbar">
+            <button onclick="switchTab('hospedagem')" id="tab-hospedagem" class="py-3 px-1 active-tab flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-hotel text-indigo-500"></i> Hospedagens & Voos
+            </button>
+            <button onclick="switchTab('passeios')" id="tab-passeios" class="py-3 px-1 flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-ticket text-emerald-500"></i> Passeios & Ingressos
+            </button>
+            <button onclick="switchTab('roteiro')" id="tab-roteiro" class="py-3 px-1 flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-calendar-days text-amber-500"></i> Roteiro Por Hora
+            </button>
+            <button onclick="switchTab('checklist')" id="tab-checklist" class="py-3 px-1 flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-list-check text-rose-500"></i> Checklist da Mala
+            </button>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- ABA 1: HOSPEDAGEM E TRANSPORTE -->
+        <section id="sec-hospedagem" class="space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-bed text-indigo-600"></i> Hotéis & Estadias
+                </h2>
+                <button onclick="openHotelModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center gap-1">
+                    <i class="fa-solid fa-plus"></i> Adicionar Hotel
+                </button>
+            </div>
+
+            <div id="hotelList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Cards de Hospedagem -->
+            </div>
+        </section>
+
+        <!-- ABA 2: PASSEIOS E SITES COMPRADOS -->
+        <section id="sec-passeios" class="space-y-6 hidden">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-compass text-emerald-600"></i> Passeios, Reservas & Sites Comprados
+                </h2>
+                <button onclick="openActivityModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center gap-1">
+                    <i class="fa-solid fa-plus"></i> Adicionar Passeio
+                </button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold text-xs uppercase tracking-wider">
+                                <th class="p-3">Passeio / Atividade</th>
+                                <th class="p-3">Data & Hora</th>
+                                <th class="p-3">Site / Onde Comprei</th>
+                                <th class="p-3">Valor</th>
+                                <th class="p-3">Status</th>
+                                <th class="p-3 text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activityTable" class="divide-y divide-slate-100">
+                            <!-- Linhas da Tabela -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA 3: ROTEIRO DIÁRIO / HORÁRIOS -->
+        <section id="sec-roteiro" class="space-y-6 hidden">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-clock text-amber-600"></i> Cronograma do Dia a Dia
+                </h2>
+                <button onclick="openScheduleModal()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center gap-1">
+                    <i class="fa-solid fa-plus"></i> Adicionar ao Cronograma
+                </button>
+            </div>
+
+            <div id="scheduleTimeline" class="space-y-4">
+                <!-- Timeline organizada por datas -->
+            </div>
+        </section>
+
+        <!-- ABA 4: CHECKLIST DA MALA -->
+        <section id="sec-checklist" class="space-y-6 hidden">
+            <div class="flex justify-between items-center">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-check text-rose-600"></i> Checklist & Mala de Viagem
+                </h2>
+                <div class="flex gap-2">
+                    <button onclick="addDefaultChecklist()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg transition">
+                        + Itens Padrão
+                    </button>
+                    <button onclick="openChecklistModal()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center gap-1">
+                        <i class="fa-solid fa-plus"></i> Novo Item
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Documentos -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <h3 class="font-bold text-slate-700 text-sm border-b pb-2 flex items-center justify-between">
+                        <span><i class="fa-solid fa-id-card text-blue-500 mr-2"></i> Documentos & Dinheiro</span>
+                    </h3>
+                    <div id="checklist-docs" class="space-y-2"></div>
+                </div>
+
+                <!-- Roupas & Calçados -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <h3 class="font-bold text-slate-700 text-sm border-b pb-2 flex items-center justify-between">
+                        <span><i class="fa-solid fa-shirt text-indigo-500 mr-2"></i> Roupas & Vestuário</span>
+                    </h3>
+                    <div id="checklist-roupas" class="space-y-2"></div>
+                </div>
+
+                <!-- Higiene & Eletrônicos -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <h3 class="font-bold text-slate-700 text-sm border-b pb-2 flex items-center justify-between">
+                        <span><i class="fa-solid fa-plug text-amber-500 mr-2"></i> Eletrônicos & Outros</span>
+                    </h3>
+                    <div id="checklist-outros" class="space-y-2"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAIS -->
+
+    <!-- Modal Nova Viagem -->
+    <div id="modalNewTrip" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <h3 class="text-lg font-bold text-slate-800">Criar Nova Viagem</h3>
+            <form onsubmit="saveNewTrip(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs font-semibold text-slate-600">Nome do Destino</label>
+                    <input type="text" id="tripName" required placeholder="Ex: Paris, França" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600">Data de Início</label>
+                        <input type="date" id="tripStart" required class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600">Data de Fim</label>
+                        <input type="date" id="tripEnd" required class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modalNewTrip')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold">Salvar Viagem</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Hotel -->
+    <div id="modalHotel" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <h3 class="text-lg font-bold text-slate-800">Cadastrar Hotel / Hospedagem</h3>
+            <form onsubmit="saveHotel(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs font-semibold text-slate-600">Nome do Hotel/Airbnb</label>
+                    <input type="text" id="hotelName" required placeholder="Ex: Hotel Grand Plaza" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600">Status da Reserva</label>
+                    <select id="hotelStatus" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="Reservado">Reservado / Confirmado</option>
+                        <option value="A Comprar">Ainda preciso reservar (A Comprar)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600">Endereço / Localização</label>
+                    <input type="text" id="hotelAddress" placeholder="Rua, número, bairro" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600">Check-in (Data & Hora)</label>
+                        <input type="datetime-local" id="hotelCheckin" required class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600">Check-out (Data & Hora)</label>
+                        <input type="datetime-local" id="hotelCheckout" required class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600">Código de Reserva / Anotações</label>
+                    <input type="text" id="hotelNotes" placeholder="Ex: Reserva #12345 - Café da manhã incluso" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modalHotel')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold">Salvar Hotel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Passeio -->
+    <div id="modalActivity" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <h3 class="text-lg font-bold text-slate-800">Cadastrar Passeio / Ingresso</h3>
+            <form onsubmit="saveActivity(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs font-semibold text-slate-600">Nome do Passeio / Atraçao</label>
+                    <input type="text" id="actTitle" required placeholder="Ex: Tour Museu do Louvre" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600">Data e Hora</label>
+                        <input type="datetime-local" id="actDateTime" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600">Valor (R$ ou Moeda)</label>
+                        <input type="text" id="actPrice" placeholder="Ex: 150,00" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600">Site / Plataforma onde comprou</label>
+                    <input type="url" id="actUrl" placeholder="https://getyourguide.com/..." class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600">Status do Ingresso</label>
+                    <select id="actStatus" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <option value="Comprado">Comprado / Confirmado</option>
+                        <option value="Reservado">Reservado (Pagar no local)</option>
+                        <option value="A Comprar">Ainda preciso comprar (A Comprar)</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modalActivity')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-semibold">Salvar Passeio</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Roteiro Por Hora -->
+    <div id="modalSchedule" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <h3 class="text-lg font-bold text-slate-800">Adicionar Item ao Roteiro</h3>
+            <form onsubmit="saveSchedule(event)" class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600">Data</label>
+                        <input type="date" id="schDate" required class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600">Horário</label>
+                        <input type="time" id="schTime" required class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600">Atividade / Compromisso</label>
+                    <input type="text" id="schTitle" required placeholder="Ex: Almoço no Restaurante X" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600">Detalhes / Dicas Rápidas</label>
+                    <textarea id="schNotes" rows="2" placeholder="Ex: Pedir mesa na varanda, levar casaco..." class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modalSchedule')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-semibold">Salvar no Cronograma</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Checklist Item -->
+    <div id="modalChecklist" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+            <h3 class="text-lg font-bold text-slate-800">Adicionar Item à Mala</h3>
+            <form onsubmit="saveChecklistItem(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs font-semibold text-slate-600">Item</label>
+                    <input type="text" id="chkTitle" required placeholder="Ex: Adaptador de Tomada" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-rose-500 outline-none">
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600">Categoria</label>
+                    <select id="chkCategory" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-rose-500 outline-none">
+                        <option value="docs">Documentos & Dinheiro</option>
+                        <option value="roupas">Roupas & Vestuário</option>
+                        <option value="outros">Eletrônicos & Outros</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-slate-600">Status da Compra</label>
+                    <select id="chkStatus" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-rose-500 outline-none">
+                        <option value="Já Tenho">Já Tenho</option>
+                        <option value="A Comprar">Preciso Comprar (A Comprar)</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('modalChecklist')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-rose-600 text-white rounded-lg hover:bg-rose-700 font-semibold">Adicionar Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- SCRIPT DE LÓGICA COMPLETA -->
+    <script>
+        // ESTADO GLOBAL DA APLICAÇÃO
+        let trips = JSON.parse(localStorage.getItem('planner_trips')) || [];
+        let currentTripId = localStorage.getItem('planner_current_trip_id') || null;
+
+        // INICIALIZAÇÃO
+        window.addEventListener('DOMContentLoaded', () => {
+            if (trips.length === 0) {
+                // Criar viagem de exemplo
+                const sampleTrip = {
+                    id: 'trip_' + Date.now(),
+                    name: 'Exemplo: Rio de Janeiro',
+                    startDate: '2026-11-10',
+                    endDate: '2026-11-15',
+                    hotels: [{
+                        id: 'h1',
+                        name: 'Hotel Copacabana Palace',
+                        address: 'Av. Atlântica, 1702 - Copacabana',
+                        checkin: '2026-11-10T14:00',
+                        checkout: '2026-11-15T12:00',
+                        notes: 'Reserva Booking #98765',
+                        status: 'Reservado'
+                    }],
+                    activities: [{
+                        id: 'a1',
+                        title: 'Bondinho Pão de Açúcar',
+                        datetime: '2026-11-11T10:00',
+                        url: 'https://www.bondinho.com.br',
+                        price: '160.00',
+                        status: 'Comprado'
+                    }],
+                    schedule: [{
+                        id: 's1',
+                        date: '2026-11-11',
+                        time: '10:00',
+                        title: 'Visita ao Pão de Açúcar',
+                        notes: 'Ir de Uber. Levar óculos de sol.'
+                    }],
+                    checklist: [
+                        { id: 'c1', title: 'Passaporte / RG', category: 'docs', checked: true, status: 'Já Tenho' },
+                        { id: 'c2', title: 'Carregador do Celular', category: 'outros', checked: false, status: 'Já Tenho' },
+                        { id: 'c3', title: 'Protetor Solar FPS 50', category: 'outros', checked: false, status: 'A Comprar' }
+                    ]
+                };
+                trips.push(sampleTrip);
+                currentTripId = sampleTrip.id;
+                saveToLocalStorage();
+            }
+
+            if (!currentTripId && trips.length > 0) {
+                currentTripId = trips[0].id;
+            }
+
+            renderTripSelector();
+            renderCurrentTrip();
+        });
+
+        // NAVEGAÇÃO DE ABAS
+        function switchTab(tab) {
+            ['hospedagem', 'passeios', 'roteiro', 'checklist'].forEach(t => {
+                document.getElementById('sec-' + t).classList.add('hidden');
+                document.getElementById('tab-' + t).classList.remove('active-tab');
+            });
+            document.getElementById('sec-' + tab).classList.remove('hidden');
+            document.getElementById('tab-' + tab).classList.add('active-tab');
+        }
+
+        // SALVAMENTO NO LOCAL STORAGE
+        function saveToLocalStorage() {
+            localStorage.setItem('planner_trips', JSON.stringify(trips));
+            localStorage.setItem('planner_current_trip_id', currentTripId);
+        }
+
+        function getCurrentTrip() {
+            return trips.find(t => t.id === currentTripId);
+        }
+
+        // GESTÃO DE VIAGENS
+        function renderTripSelector() {
+            const select = document.getElementById('tripSelect');
+            select.innerHTML = '';
+            trips.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.id;
+                opt.textContent = t.name;
+                if (t.id === currentTripId) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function changeTrip() {
+            currentTripId = document.getElementById('tripSelect').value;
+            saveToLocalStorage();
+            renderCurrentTrip();
+        }
+
+        function openNewTripModal() {
+            document.getElementById('modalNewTrip').classList.remove('hidden');
+        }
+
+        function saveNewTrip(e) {
+            e.preventDefault();
+            const newTrip = {
+                id: 'trip_' + Date.now(),
+                name: document.getElementById('tripName').value,
+                startDate: document.getElementById('tripStart').value,
+                endDate: document.getElementById('tripEnd').value,
+                hotels: [],
+                activities: [],
+                schedule: [],
+                checklist: []
+            };
+            trips.push(newTrip);
+            currentTripId = newTrip.id;
+            saveToLocalStorage();
+            renderTripSelector();
+            renderCurrentTrip();
+            closeModal('modalNewTrip');
+            e.target.reset();
+        }
+
+        function deleteCurrentTrip() {
+            if (trips.length <= 1) {
+                alert('Você precisa ter pelo menos uma viagem salva!');
+                return;
+            }
+            if (confirm('Tem certeza que deseja excluir esta viagem inteira?')) {
+                trips = trips.filter(t => t.id !== currentTripId);
+                currentTripId = trips[0].id;
+                saveToLocalStorage();
+                renderTripSelector();
+                renderCurrentTrip();
+            }
+        }
+
+        // RENDERIZAÇÃO DA VIAGEM ATUAL
+        function renderCurrentTrip() {
+            const trip = getCurrentTrip();
+            if (!trip) return;
+
+            // Summary
+            const startFormatted = trip.startDate ? new Date(trip.startDate + 'T00:00').toLocaleDateString('pt-BR') : 'A definir';
+            const endFormatted = trip.endDate ? new Date(trip.endDate + 'T00:00').toLocaleDateString('pt-BR') : 'A definir';
+            document.getElementById('tripSummary').innerHTML = `
+                <div>
+                    <span class="text-slate-500">Destino Ativo:</span> <strong class="text-indigo-900 text-base ml-1">${trip.name}</strong>
+                </div>
+                <div class="flex gap-4 text-xs font-medium text-slate-600">
+                    <span><i class="fa-regular fa-calendar mr-1"></i> ${startFormatted} até ${endFormatted}</span>
+                    <span><i class="fa-solid fa-hotel mr-1"></i> ${trip.hotels.length} Hotéis</span>
+                    <span><i class="fa-solid fa-ticket mr-1"></i> ${trip.activities.length} Passeios</span>
+                </div>
+            `;
+
+            renderHotels();
+            renderActivities();
+            renderSchedule();
+            renderChecklist();
+        }
+
+        // --- ABA 1: HOSPEDAGENS ---
+        function openHotelModal() {
+            document.getElementById('modalHotel').classList.remove('hidden');
+        }
+
+        function saveHotel(e) {
+            e.preventDefault();
+            const trip = getCurrentTrip();
+            trip.hotels.push({
+                id: 'hotel_' + Date.now(),
+                name: document.getElementById('hotelName').value,
+                status: document.getElementById('hotelStatus').value,
+                address: document.getElementById('hotelAddress').value,
+                checkin: document.getElementById('hotelCheckin').value,
+                checkout: document.getElementById('hotelCheckout').value,
+                notes: document.getElementById('hotelNotes').value
+            });
+            saveToLocalStorage();
+            renderHotels();
+            closeModal('modalHotel');
+            e.target.reset();
+        }
+
+        function deleteHotel(id) {
+            const trip = getCurrentTrip();
+            trip.hotels = trip.hotels.filter(h => h.id !== id);
+            saveToLocalStorage();
+            renderHotels();
+        }
+
+        function renderHotels() {
+            const list = document.getElementById('hotelList');
+            const trip = getCurrentTrip();
+            list.innerHTML = '';
+
+            if (trip.hotels.length === 0) {
+                list.innerHTML = `<div class="col-span-2 text-center py-8 text-slate-400 border border-dashed rounded-xl">Nenhuma hospedagem adicionada ainda.</div>`;
+                return;
+            }
+
+            trip.hotels.forEach(h => {
+                const inDt = h.checkin ? new Date(h.checkin).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'N/A';
+                const outDt = h.checkout ? new Date(h.checkout).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'N/A';
+                
+                const isToBuy = h.status === 'A Comprar';
+                const hotelSearchUrl = `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(h.name + ' ' + trip.name)}`;
+
+                list.innerHTML += `
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs relative hover:shadow-md transition">
+                        <button onclick="deleteHotel('${h.id}')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        <div class="flex items-center gap-2 pr-6">
+                            <h3 class="font-bold text-indigo-900 text-base">${h.name}</h3>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isToBuy ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">${h.status || 'Reservado'}</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1 flex items-center gap-1"><i class="fa-solid fa-location-dot text-rose-500"></i> ${h.address || 'Sem endereço registrado'}</p>
+                        
+                        <div class="grid grid-cols-2 gap-2 mt-3 bg-slate-50 p-3 rounded-lg text-xs">
+                            <div>
+                                <span class="text-slate-400 block font-semibold">Check-in</span>
+                                <span class="text-slate-700 font-bold">${inDt}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block font-semibold">Check-out</span>
+                                <span class="text-slate-700 font-bold">${outDt}</span>
+                            </div>
+                        </div>
+
+                        ${isToBuy ? `
+                            <div class="mt-3 p-2.5 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between">
+                                <span class="text-xs text-amber-900 font-medium"><i class="fa-solid fa-bag-shopping mr-1 text-amber-600"></i> Ainda não reservou?</span>
+                                <a href="${hotelSearchUrl}" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-1.5 rounded-md transition shadow-2xs flex items-center gap-1">
+                                    Pesquisar Reserva <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+                        ` : ''}
+
+                        ${h.notes ? `<p class="text-xs text-indigo-700 mt-3 bg-indigo-50 p-2 rounded border border-indigo-100">📌 ${h.notes}</p>` : ''}
+                    </div>
+                `;
+            });
+        }
+
+        // --- ABA 2: PASSEIOS & INGRESSOS ---
+        function openActivityModal() {
+            document.getElementById('modalActivity').classList.remove('hidden');
+        }
+
+        function saveActivity(e) {
+            e.preventDefault();
+            const trip = getCurrentTrip();
+            trip.activities.push({
+                id: 'act_' + Date.now(),
+                title: document.getElementById('actTitle').value,
+                datetime: document.getElementById('actDateTime').value,
+                price: document.getElementById('actPrice').value,
+                url: document.getElementById('actUrl').value,
+                status: document.getElementById('actStatus').value
+            });
+            saveToLocalStorage();
+            renderActivities();
+            closeModal('modalActivity');
+            e.target.reset();
+        }
+
+        function deleteActivity(id) {
+            const trip = getCurrentTrip();
+            trip.activities = trip.activities.filter(a => a.id !== id);
+            saveToLocalStorage();
+            renderActivities();
+        }
+
+        function renderActivities() {
+            const table = document.getElementById('activityTable');
+            const trip = getCurrentTrip();
+            table.innerHTML = '';
+
+            if (trip.activities.length === 0) {
+                table.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Nenhum passeio cadastrado.</td></tr>`;
+                return;
+            }
+
+            trip.activities.forEach(a => {
+                const dt = a.datetime ? new Date(a.datetime).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'A definir';
+                let statusBadge = 'bg-emerald-100 text-emerald-800';
+                if (a.status === 'Reservado') statusBadge = 'bg-amber-100 text-amber-800';
+                if (a.status === 'A Comprar') statusBadge = 'bg-rose-100 text-rose-800';
+
+                const urlDomain = a.url ? new URL(a.url).hostname : '';
+                const activitySearchUrl = `https://www.google.com/search?q=${encodeURIComponent('comprar ingresso ' + a.title + ' ' + trip.name)}`;
+
+                table.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-3 font-semibold text-slate-800">
+                            ${a.title}
+                            ${a.status === 'A Comprar' ? `
+                                <a href="${activitySearchUrl}" target="_blank" class="inline-flex items-center gap-1 text-[11px] text-amber-700 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded border border-amber-200 ml-2 font-normal transition">
+                                    <i class="fa-solid fa-tag"></i> Encontrar Oferta
+                                </a>
+                            ` : ''}
+                        </td>
+                        <td class="p-3 text-xs text-slate-600">${dt}</td>
+                        <td class="p-3 text-xs">
+                            ${a.url ? `<a href="${a.url}" target="_blank" class="text-indigo-600 hover:underline flex items-center gap-1"><i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> ${urlDomain}</a>` : '<span class="text-slate-400">-</span>'}
+                        </td>
+                        <td class="p-3 text-xs font-bold text-slate-700">${a.price ? 'R$ ' + a.price : '-'}</td>
+                        <td class="p-3 text-xs"><span class="px-2 py-1 rounded-full font-semibold text-[11px] ${statusBadge}">${a.status}</span></td>
+                        <td class="p-3 text-right">
+                            <button onclick="deleteActivity('${a.id}')" class="text-slate-400 hover:text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // --- ABA 3: ROTEIRO DIÁRIO ---
+        function openScheduleModal() {
+            document.getElementById('modalSchedule').classList.remove('hidden');
+        }
+
+        function saveSchedule(e) {
+            e.preventDefault();
+            const trip = getCurrentTrip();
+            trip.schedule.push({
+                id: 'sch_' + Date.now(),
+                date: document.getElementById('schDate').value,
+                time: document.getElementById('schTime').value,
+                title: document.getElementById('schTitle').value,
+                notes: document.getElementById('schNotes').value
+            });
+            trip.schedule.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+            saveToLocalStorage();
+            renderSchedule();
+            closeModal('modalSchedule');
+            e.target.reset();
+        }
+
+        function deleteSchedule(id) {
+            const trip = getCurrentTrip();
+            trip.schedule = trip.schedule.filter(s => s.id !== id);
+            saveToLocalStorage();
+            renderSchedule();
+        }
+
+        function renderSchedule() {
+            const timeline = document.getElementById('scheduleTimeline');
+            const trip = getCurrentTrip();
+            timeline.innerHTML = '';
+
+            if (trip.schedule.length === 0) {
+                timeline.innerHTML = `<div class="text-center py-8 text-slate-400 border border-dashed rounded-xl">Nenhum compromisso agendado no cronograma.</div>`;
+                return;
+            }
+
+            const grouped = {};
+            trip.schedule.forEach(item => {
+                if (!grouped[item.date]) grouped[item.date] = [];
+                grouped[item.date].push(item);
+            });
+
+            Object.keys(grouped).sort().forEach(dateStr => {
+                const dateFormatted = new Date(dateStr + 'T00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' });
+                
+                let itemsHtml = '';
+                grouped[dateStr].forEach(item => {
+                    itemsHtml += `
+                        <div class="flex items-start gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-2xs hover:border-amber-300 transition">
+                            <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded-md min-w-[55px] text-center">${item.time}</span>
+                            <div class="flex-grow">
+                                <h4 class="font-bold text-slate-800 text-sm">${item.title}</h4>
+                                ${item.notes ? `<p class="text-xs text-slate-500 mt-0.5">${item.notes}</p>` : ''}
+                            </div>
+                            <button onclick="deleteSchedule('${item.id}')" class="text-slate-300 hover:text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                });
+
+                timeline.innerHTML += `
+                    <div class="bg-slate-100/70 p-4 rounded-xl border border-slate-200">
+                        <h3 class="font-bold text-slate-700 text-xs capitalize mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-calendar-day text-amber-500"></i> ${dateFormatted}
+                        </h3>
+                        <div class="space-y-2">
+                            ${itemsHtml}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- ABA 4: CHECKLIST ---
+        function openChecklistModal() {
+            document.getElementById('modalChecklist').classList.remove('hidden');
+        }
+
+        function saveChecklistItem(e) {
+            e.preventDefault();
+            const trip = getCurrentTrip();
+            trip.checklist.push({
+                id: 'chk_' + Date.now(),
+                title: document.getElementById('chkTitle').value,
+                category: document.getElementById('chkCategory').value,
+                status: document.getElementById('chkStatus').value,
+                checked: false
+            });
+            saveToLocalStorage();
+            renderChecklist();
+            closeModal('modalChecklist');
+            e.target.reset();
+        }
+
+        function toggleChecklist(id) {
+            const trip = getCurrentTrip();
+            const item = trip.checklist.find(c => c.id === id);
+            if (item) {
+                item.checked = !item.checked;
+                saveToLocalStorage();
+                renderChecklist();
+            }
+        }
+
+        function deleteChecklist(id) {
+            const trip = getCurrentTrip();
+            trip.checklist = trip.checklist.filter(c => c.id !== id);
+            saveToLocalStorage();
+            renderChecklist();
+        }
+
+        function addDefaultChecklist() {
+            const trip = getCurrentTrip();
+            const defaults = [
+                { id: 'c_d1', title: 'Passaporte / RG', category: 'docs', status: 'Já Tenho', checked: false },
+                { id: 'c_d2', title: 'Cartão de Crédito / Dinheiro', category: 'docs', status: 'Já Tenho', checked: false },
+                { id: 'c_d3', title: 'Seguro Viagem Impresso', category: 'docs', status: 'Já Tenho', checked: false },
+                { id: 'c_r1', title: 'Camisetas & Blusas', category: 'roupas', status: 'Já Tenho', checked: false },
+                { id: 'c_r2', title: 'Roupas Íntimas', category: 'roupas', status: 'Já Tenho', checked: false },
+                { id: 'c_r3', title: 'Calçado Confortável', category: 'roupas', status: 'Já Tenho', checked: false },
+                { id: 'c_o1', title: 'Carregador & Powerbank', category: 'outros', status: 'Já Tenho', checked: false },
+                { id: 'c_o2', title: 'Kit de Higiene / Nécessaire', category: 'outros', status: 'Já Tenho', checked: false },
+                { id: 'c_o3', title: 'Protetor Solar', category: 'outros', status: 'A Comprar', checked: false }
+            ];
+            
+            defaults.forEach(d => {
+                if (!trip.checklist.some(c => c.title === d.title)) {
+                    trip.checklist.push(d);
+                }
+            });
+            saveToLocalStorage();
+            renderChecklist();
+        }
+
+        function renderChecklist() {
+            const trip = getCurrentTrip();
+            const categories = ['docs', 'roupas', 'outros'];
+
+            categories.forEach(cat => {
+                const container = document.getElementById('checklist-' + cat);
+                container.innerHTML = '';
+                const items = trip.checklist.filter(c => c.category === cat);
+
+                if (items.length === 0) {
+                    container.innerHTML = `<p class="text-xs text-slate-400 italic">Vazio</p>`;
+                    return;
+                }
+
+                items.forEach(item => {
+                    const isToBuy = item.status === 'A Comprar';
+                    const buySearchUrl = `https://www.google.com/search?q=${encodeURIComponent('comprar ' + item.title)}`;
+
+                    container.innerHTML += `
+                        <div class="flex items-center justify-between p-2 rounded hover:bg-slate-50 transition border border-transparent hover:border-slate-100 gap-2">
+                            <label class="flex items-center gap-2 cursor-pointer flex-grow text-xs select-none">
+                                <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleChecklist('${item.id}')" class="rounded text-rose-600 focus:ring-rose-500 w-4 h-4">
+                                <span class="${item.checked ? 'line-through text-slate-400' : 'text-slate-700 font-medium'}">${item.title}</span>
+                            </label>
+                            
+                            ${isToBuy ? `
+                                <a href="${buySearchUrl}" target="_blank" class="text-[10px] bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded font-semibold whitespace-nowrap flex items-center gap-1">
+                                    <i class="fa-solid fa-cart-shopping"></i> Comprar
+                                </a>
+                            ` : ''}
+
+                            <button onclick="deleteChecklist('${item.id}')" class="text-slate-300 hover:text-red-500 text-xs"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // AUXILIARES
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
