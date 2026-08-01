@@ -38,12 +38,15 @@
             </div>
             
             <!-- Selector de Viagem / Nova Viagem -->
-            <div class="flex items-center gap-2 w-full md:w-auto">
+            <div class="flex items-center gap-2 w-full md:w-auto flex-wrap">
                 <select id="tripSelect" onchange="changeTrip()" class="bg-indigo-800 text-white border border-indigo-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 flex-grow md:flex-grow-0">
                     <!-- Opções geradas via JS -->
                 </select>
                 <button onclick="openNewTripModal()" class="bg-yellow-400 hover:bg-yellow-300 text-indigo-900 font-bold px-3 py-2 rounded-lg text-sm flex items-center gap-1 transition shadow">
                     <i class="fa-solid fa-plus"></i> Nova
+                </button>
+                <button onclick="exportToWord()" title="Exportar Viagem para Word" class="bg-blue-500/90 hover:bg-blue-400 text-white font-bold px-3 py-2 rounded-lg text-sm flex items-center gap-1 transition shadow">
+                    <i class="fa-solid fa-file-word"></i> Exportar Word
                 </button>
                 <button onclick="deleteCurrentTrip()" title="Excluir Viagem Atual" class="bg-red-500/20 hover:bg-red-500 text-red-200 hover:text-white p-2 rounded-lg text-sm transition">
                     <i class="fa-solid fa-trash"></i>
@@ -858,6 +861,226 @@
         // AUXILIARES
         function closeModal(id) {
             document.getElementById(id).classList.add('hidden');
+        }
+
+        // =====================================================================
+        // EXPORTAÇÃO PARA WORD (.doc)
+        // Gera um documento Word bem organizado com todos os dados da viagem
+        // atualmente selecionada: hospedagens, passeios, roteiro e checklist.
+        // =====================================================================
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function fmtDate(d) {
+            if (!d) return 'A definir';
+            return new Date(d + 'T00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+        }
+
+        function fmtDateTimeFull(dt) {
+            if (!dt) return 'A definir';
+            return new Date(dt).toLocaleString('pt-BR', { dateStyle: 'full', timeStyle: 'short' });
+        }
+
+        function exportToWord() {
+            const trip = getCurrentTrip();
+            if (!trip) {
+                alert('Nenhuma viagem selecionada para exportar!');
+                return;
+            }
+
+            const startFormatted = fmtDate(trip.startDate);
+            const endFormatted = fmtDate(trip.endDate);
+
+            // --- Seção: Hospedagens ---
+            let hotelsHtml = '';
+            if (trip.hotels.length === 0) {
+                hotelsHtml = `<p style="color:#94a3b8; font-style:italic;">Nenhuma hospedagem cadastrada.</p>`;
+            } else {
+                trip.hotels.forEach((h, idx) => {
+                    const inDt = h.checkin ? fmtDateTimeFull(h.checkin) : 'Não definido';
+                    const outDt = h.checkout ? fmtDateTimeFull(h.checkout) : 'Não definido';
+                    hotelsHtml += `
+                        <table style="width:100%; border-collapse:collapse; margin-bottom:16px; border:1px solid #cbd5e1;">
+                            <tr style="background-color:#4338ca;">
+                                <td colspan="2" style="padding:8px 10px; color:#ffffff; font-weight:bold; font-size:13pt;">
+                                    ${idx + 1}. ${escapeHtml(h.name)}
+                                    <span style="float:right; background-color:${h.status === 'A Comprar' ? '#fbbf24' : '#34d399'}; color:#1e293b; font-size:9pt; padding:2px 8px; border-radius:10px;">${escapeHtml(h.status || 'Reservado')}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:6px 10px; width:35%; font-weight:bold; background-color:#f1f5f9; border:1px solid #e2e8f0;">Endereço</td>
+                                <td style="padding:6px 10px; border:1px solid #e2e8f0;">${escapeHtml(h.address) || 'Sem endereço registrado'}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:6px 10px; font-weight:bold; background-color:#f1f5f9; border:1px solid #e2e8f0;">Check-in</td>
+                                <td style="padding:6px 10px; border:1px solid #e2e8f0;">${inDt}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding:6px 10px; font-weight:bold; background-color:#f1f5f9; border:1px solid #e2e8f0;">Check-out</td>
+                                <td style="padding:6px 10px; border:1px solid #e2e8f0;">${outDt}</td>
+                            </tr>
+                            ${h.notes ? `
+                            <tr>
+                                <td style="padding:6px 10px; font-weight:bold; background-color:#f1f5f9; border:1px solid #e2e8f0;">Anotações</td>
+                                <td style="padding:6px 10px; border:1px solid #e2e8f0;">${escapeHtml(h.notes)}</td>
+                            </tr>` : ''}
+                        </table>
+                    `;
+                });
+            }
+
+            // --- Seção: Passeios & Ingressos ---
+            let activitiesHtml = '';
+            if (trip.activities.length === 0) {
+                activitiesHtml = `<p style="color:#94a3b8; font-style:italic;">Nenhum passeio cadastrado.</p>`;
+            } else {
+                let rows = '';
+                trip.activities.forEach(a => {
+                    const dt = a.datetime ? fmtDateTimeFull(a.datetime) : 'A definir';
+                    let statusColor = '#34d399';
+                    if (a.status === 'Reservado') statusColor = '#fbbf24';
+                    if (a.status === 'A Comprar') statusColor = '#fb7185';
+                    rows += `
+                        <tr>
+                            <td style="padding:6px 8px; border:1px solid #e2e8f0; font-weight:bold;">${escapeHtml(a.title)}</td>
+                            <td style="padding:6px 8px; border:1px solid #e2e8f0; font-size:9.5pt;">${dt}</td>
+                            <td style="padding:6px 8px; border:1px solid #e2e8f0; font-size:9.5pt;">${a.url ? escapeHtml(a.url) : '-'}</td>
+                            <td style="padding:6px 8px; border:1px solid #e2e8f0; font-size:9.5pt;">${a.price ? 'R$ ' + escapeHtml(a.price) : '-'}</td>
+                            <td style="padding:6px 8px; border:1px solid #e2e8f0; font-size:9pt;"><span style="background-color:${statusColor}; padding:2px 8px; border-radius:10px;">${escapeHtml(a.status)}</span></td>
+                        </tr>
+                    `;
+                });
+                activitiesHtml = `
+                    <table style="width:100%; border-collapse:collapse; margin-bottom:16px;">
+                        <tr style="background-color:#059669; color:#ffffff;">
+                            <td style="padding:8px; font-weight:bold; border:1px solid #e2e8f0;">Passeio / Atividade</td>
+                            <td style="padding:8px; font-weight:bold; border:1px solid #e2e8f0;">Data & Hora</td>
+                            <td style="padding:8px; font-weight:bold; border:1px solid #e2e8f0;">Site / Onde Comprei</td>
+                            <td style="padding:8px; font-weight:bold; border:1px solid #e2e8f0;">Valor</td>
+                            <td style="padding:8px; font-weight:bold; border:1px solid #e2e8f0;">Status</td>
+                        </tr>
+                        ${rows}
+                    </table>
+                `;
+            }
+
+            // --- Seção: Roteiro Por Hora ---
+            let scheduleHtml = '';
+            if (trip.schedule.length === 0) {
+                scheduleHtml = `<p style="color:#94a3b8; font-style:italic;">Nenhum compromisso agendado no cronograma.</p>`;
+            } else {
+                const grouped = {};
+                trip.schedule.forEach(item => {
+                    if (!grouped[item.date]) grouped[item.date] = [];
+                    grouped[item.date].push(item);
+                });
+                Object.keys(grouped).sort().forEach(dateStr => {
+                    const dateFormatted = fmtDate(dateStr);
+                    let itemsRows = '';
+                    grouped[dateStr].forEach(item => {
+                        itemsRows += `
+                            <tr>
+                                <td style="padding:6px 8px; border:1px solid #e2e8f0; font-weight:bold; background-color:#fef3c7; width:70px; text-align:center;">${escapeHtml(item.time)}</td>
+                                <td style="padding:6px 8px; border:1px solid #e2e8f0;">
+                                    <strong>${escapeHtml(item.title)}</strong>
+                                    ${item.notes ? `<br><span style="font-size:9pt; color:#64748b;">${escapeHtml(item.notes)}</span>` : ''}
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    scheduleHtml += `
+                        <p style="font-weight:bold; text-transform:capitalize; color:#b45309; margin-top:14px; margin-bottom:4px; font-size:12pt;">📅 ${dateFormatted}</p>
+                        <table style="width:100%; border-collapse:collapse; margin-bottom:10px;">
+                            ${itemsRows}
+                        </table>
+                    `;
+                });
+            }
+
+            // --- Seção: Checklist da Mala ---
+            const catLabels = { docs: 'Documentos & Dinheiro', roupas: 'Roupas & Vestuário', outros: 'Eletrônicos & Outros' };
+            let checklistHtml = '';
+            ['docs', 'roupas', 'outros'].forEach(cat => {
+                const items = trip.checklist.filter(c => c.category === cat);
+                checklistHtml += `<p style="font-weight:bold; color:#be123c; margin-top:12px; margin-bottom:4px; font-size:11.5pt;">${catLabels[cat]}</p>`;
+                if (items.length === 0) {
+                    checklistHtml += `<p style="color:#94a3b8; font-style:italic; margin-left:10px;">Nenhum item.</p>`;
+                } else {
+                    let rows = '';
+                    items.forEach(item => {
+                        rows += `
+                            <tr>
+                                <td style="padding:4px 8px; border:1px solid #e2e8f0; width:24px; text-align:center;">${item.checked ? '☑' : '☐'}</td>
+                                <td style="padding:4px 8px; border:1px solid #e2e8f0; ${item.checked ? 'text-decoration:line-through; color:#94a3b8;' : ''}">${escapeHtml(item.title)}</td>
+                                <td style="padding:4px 8px; border:1px solid #e2e8f0; font-size:9pt;">${escapeHtml(item.status)}</td>
+                            </tr>
+                        `;
+                    });
+                    checklistHtml += `<table style="width:100%; border-collapse:collapse; margin-bottom:8px;">${rows}</table>`;
+                }
+            });
+
+            // --- Monta o documento Word completo (HTML compatível com MS Word) ---
+            const docContent = `
+                <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+                <head>
+                    <meta charset="utf-8">
+                    <title>${escapeHtml(trip.name)}</title>
+                    <!--[if gte mso 9]>
+                    <xml>
+                        <w:WordDocument>
+                            <w:View>Print</w:View>
+                            <w:Zoom>100</w:Zoom>
+                            <w:DoNotOptimizeForBrowser/>
+                        </w:WordDocument>
+                    </xml>
+                    <![endif]-->
+                    <style>
+                        @page { size: 21cm 29.7cm; margin: 2cm; }
+                        body { font-family: Calibri, Arial, sans-serif; color: #1e293b; font-size: 11pt; }
+                        h1 { color: #3730a3; font-size: 22pt; margin-bottom: 2px; }
+                        h2 { color: #ffffff; background-color:#3730a3; padding: 6px 10px; font-size: 14pt; margin-top: 26px; margin-bottom: 10px; }
+                        p { line-height: 1.4; }
+                    </style>
+                </head>
+                <body>
+                    <h1>✈️ ${escapeHtml(trip.name)}</h1>
+                    <p style="font-size:12pt; color:#475569; margin-top:0;">
+                        <strong>Período:</strong> ${startFormatted} até ${endFormatted}
+                    </p>
+                    <p style="font-size:9pt; color:#94a3b8;">Documento gerado em ${new Date().toLocaleDateString('pt-BR')} pelo Planner de Viagem Pro</p>
+
+                    <h2>🏨 Hospedagens & Estadias</h2>
+                    ${hotelsHtml}
+
+                    <h2>🎫 Passeios, Reservas & Ingressos</h2>
+                    ${activitiesHtml}
+
+                    <h2>🕒 Roteiro / Cronograma do Dia a Dia</h2>
+                    ${scheduleHtml}
+
+                    <h2>🧳 Checklist da Mala</h2>
+                    ${checklistHtml}
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff', docContent], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            const safeName = trip.name.replace(/[^a-z0-9\u00C0-\u017F]+/gi, '_');
+            link.download = `Viagem_${safeName || 'Planejamento'}.doc`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         }
     </script>
 </body>
