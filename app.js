@@ -75,3 +75,19 @@ function salvarViagem(nomeHotel, dataHoraCheckIn) {
   // Dispara o agendamento do temporizador
   agendarNotificacoesCheckIn(dataHoraCheckIn, nomeHotel);
 }
+function pedirPermissaoNotificacao() {
+  // Verifica se o navegador suporta notificações
+  if (!('Notification' in window)) {
+    alert('Seu navegador não suporta notificações.');
+    return;
+  }
+
+  // Isso aqui faz o POP-UP PADRÃO do navegador abrir na tela
+  Notification.requestPermission().then(permission => {
+    if (permission === 'granted') {
+      console.log('Permissão concedida pelo usuário!');
+    } else if (permission === 'denied') {
+      console.log('Usuário bloqueou as notificações.');
+    }
+  });
+}
