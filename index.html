@@ -59,13 +59,7 @@
                 <button onclick="openWeatherModal()" title="Ver Previsão do Tempo" class="bg-sky-500 hover:bg-sky-400 text-white font-bold px-3 py-2 rounded-lg text-sm flex items-center gap-1 transition shadow">
     <i class="fa-solid fa-cloud-sun"></i> Clima
 </button>
-                <button onclick="pedirPermissaoNotificacao()">🔔 Ativar Lembretes de Viagem</button>
-
-<form onsubmit="event.preventDefault(); salvarViagem(document.getElementById('hotel').value, document.getElementById('dataCheckIn').value);">
-  <input type="text" id="hotel" placeholder="Nome do Hotel" required />
-  <input type="datetime-local" id="dataCheckIn" required />
-  <button type="submit">Salvar Viagem</button>
-</form>
+               
             </div>
         </div>
     </header>
@@ -1185,6 +1179,23 @@
         container.innerHTML = `<p class="text-rose-500 text-sm text-center">Erro ao carregar a previsão do tempo. Verifique a sua ligação.</p>`;
     }
 }
+        window.addEventListener('DOMContentLoaded', () => {
+  // Pede a permissão nativa logo que a página carrega
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+
+  // Restante da sua inicialização original...
+  if (trips.length === 0) {
+    openNewTripModal();
+  } else {
+    if (!currentTripId || !trips.some(t => t.id === currentTripId)) {
+      currentTripId = trips[0].id;
+    }
+    renderTripSelector();
+    renderCurrentTrip();
+  }
+});
     </script>
 </body>
 </html>
