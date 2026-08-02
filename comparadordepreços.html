@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traveling - Comparador de Preços</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/lucas02-pixel/Planner-de-Viagem-Pro/refs/heads/main/Traveling.ico" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
+
+    <header class="bg-indigo-950 text-white shadow-md p-4 mb-6">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-scale-balanced text-amber-400 text-2xl"></i>
+                <h1 class="text-xl font-bold tracking-wide">Traveling <span class="text-amber-400 font-normal">| Comparador</span></h1>
+            </div>
+            <a href="index.html" class="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 transition">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao Planner
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 pb-12">
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 mb-8">
+            <h2 class="text-lg font-bold text-indigo-950 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-circle-plus text-indigo-600"></i> Adicionar Opção para Comparar
+            </h2>
+
+            <form id="formComparador" onsubmit="adicionarOpcao(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Nome (ex: Hotel Beira Mar / Airbnb Centro)</label>
+                    <input type="text" id="nome" required placeholder="Ex: Booking - Hotel X" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Categoria</label>
+                    <select id="categoria" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:border-indigo-500">
+                        <option value="Hospedagem">🏨 Hospedagem</option>
+                        <option value="Voo">✈️ Voo / Passagem</option>
+                        <option value="Passeio">🎟️ Passeio / Atração</option>
+                        <option value="Carro">🚗 Aluguer de Carro</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Preço Base (R$)</label>
+                    <input type="number" step="0.01" id="precoBase" required placeholder="1000.00" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Taxas / Extras (R$)</label>
+                    <input type="number" step="0.01" id="taxas" placeholder="0.00 (Ex: bagagem, limpeza)" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Classificação / Nota (0 a 5)</label>
+                    <input type="number" min="1" max="5" step="0.1" id="nota" placeholder="Ex: 4.8" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Link do Site (Opcional)</label>
+                    <input type="url" id="link" placeholder="https://..." class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div class="md:col-span-3 flex justify-end mt-2">
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2 rounded-lg text-sm transition shadow flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Guardar Opção
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-indigo-600"></i> Opções em Comparação
+                </h2>
+                <button onclick="limparTudo()" class="text-xs text-red-500 hover:underline flex items-center gap-1">
+                    <i class="fa-solid fa-trash"></i> Limpar tudo
+                </button>
+            </div>
+
+            <div id="containerOpcoes" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                </div>
+        </div>
+
+    </main>
+
+    <script>
+        let opcoes = JSON.parse(localStorage.getItem('traveling_comparador') || '[]');
+
+        function guardarESincronizar() {
+            localStorage.setItem('traveling_comparador', JSON.stringify(opcoes));
+            renderizar();
+        }
+
+        function adicionarOpcao(e) {
+            e.preventDefault();
+            const novaOpcao = {
+                id: Date.now(),
+                nome: document.getElementById('nome').value,
+                categoria: document.getElementById('categoria').value,
+                precoBase: parseFloat(document.getElementById('precoBase').value) || 0,
+                taxas: parseFloat(document.getElementById('taxas').value) || 0,
+                nota: document.getElementById('nota').value || '-',
+                link: document.getElementById('link').value || '#'
+            };
+
+            opcoes.push(novaOpcao);
+            guardarESincronizar();
+            e.target.reset();
+        }
+
+        function removerOpcao(id) {
+            opcoes = opcoes.filter(item => item.id !== id);
+            guardarESincronizar();
+        }
+
+        function limparTudo() {
+            if (confirm("Tem certeza que deseja apagar todas as comparações?")) {
+                opcoes = [];
+                guardarESincronizar();
+            }
+        }
+
+        function renderizar() {
+            const container = document.getElementById('containerOpcoes');
+            if (opcoes.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-3 text-center py-12 bg-white rounded-xl border border-dashed border-slate-300 text-slate-400">
+                        <i class="fa-solid fa-balance-scale text-4xl mb-2 text-slate-300"></i>
+                        <p class="text-sm">Nenhuma opção adicionada ainda.</p>
+                        <p class="text-xs text-slate-400">Adicione alojamentos ou voos acima para ver a comparação!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Descobre qual é o menor preço total
+            const menorPrecoTotal = Math.min(...opcoes.map(o => o.precoBase + o.taxas));
+
+            let html = '';
+            opcoes.forEach(item => {
+                const total = item.precoBase + item.taxas;
+                const eMaisBarato = total === menorPrecoTotal && opcoes.length > 1;
+
+                html += `
+                    <div class="bg-white rounded-xl border ${eMaisBarato ? 'border-emerald-500 ring-2 ring-emerald-500/20' : 'border-slate-200'} shadow-sm p-5 relative flex flex-col justify-between transition">
+                        ${eMaisBarato ? `
+                            <span class="absolute -top-3 left-4 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
+                                <i class="fa-solid fa-trophy"></i> Mais Económico
+                            </span>
+                        ` : ''}
+
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-600">${item.categoria}</span>
+                                <button onclick="removerOpcao(${item.id})" class="text-slate-300 hover:text-red-500 transition text-sm">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+
+                            <h3 class="font-bold text-indigo-950 text-base mb-1">${item.nome}</h3>
+                            <p class="text-xs text-slate-500 mb-3"><i class="fa-solid fa-star text-amber-400"></i> Nota: ${item.nota}</p>
+
+                            <div class="space-y-1 text-xs border-t border-slate-100 pt-3 text-slate-600">
+                                <div class="flex justify-between">
+                                    <span>Preço base:</span>
+                                    <span>R$ ${item.precoBase.toFixed(2)}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Taxas / Extras:</span>
+                                    <span>R$ ${item.taxas.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-slate-100 pt-3 mt-4">
+                            <div class="flex justify-between items-baseline mb-3">
+                                <span class="text-xs font-bold text-slate-500 uppercase">Total Real:</span>
+                                <span class="text-xl font-extrabold ${eMaisBarato ? 'text-emerald-600' : 'text-indigo-950'}">
+                                    R$ ${total.toFixed(2)}
+                                </span>
+                            </div>
+
+                            ${item.link !== '#' ? `
+                                <a href="${item.link}" target="_blank" class="block w-full text-center bg-slate-100 hover:bg-indigo-50 text-indigo-600 text-xs font-bold py-2 rounded-lg transition">
+                                    Ver no Site <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-[10px]"></i>
+                                </a>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Inicializa ao carregar
+        renderizar();
+    </script>
+</body>
+</html>
