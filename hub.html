@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traveling - Ecossistema</title>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/lucas02-pixel/Planner-de-Viagem-Pro/refs/heads/main/Traveling.ico" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+
+    <header class="bg-indigo-950 text-white shadow-md p-4">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-cubes text-amber-400 text-2xl"></i>
+                <h1 class="text-xl font-bold tracking-wide">Traveling <span class="text-amber-400 font-normal">| Ferramentas</span></h1>
+            </div>
+            <a href="index.html" class="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 transition">
+                <i class="fa-solid fa-arrow-left"></i> Planner
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 py-8 flex-grow w-full flex flex-col justify-center">
+
+        <h2 class="text-center font-bold text-slate-500 text-xs uppercase tracking-widest mb-6">Escolha uma Ferramenta</h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+
+            <a href="index.html" class="group bg-white hover:bg-indigo-600 rounded-3xl border border-slate-200 hover:border-indigo-600 p-6 shadow-sm hover:shadow-xl transition-all duration-300 aspect-square flex flex-col items-center justify-center text-center">
+                <div class="w-20 h-20 bg-indigo-50 group-hover:bg-white/20 text-indigo-600 group-hover:text-white rounded-2xl flex items-center justify-center text-4xl mb-4 transition">
+                    <i class="fa-solid fa-plane-departure"></i>
+                </div>
+                <span class="text-lg font-bold text-indigo-950 group-hover:text-white transition">Planner</span>
+                <span class="text-xs text-slate-400 group-hover:text-indigo-100 mt-1 transition">Roteiros & Viagem</span>
+            </a>
+
+            <a href="comparador.html" class="group bg-white hover:bg-amber-500 rounded-3xl border border-slate-200 hover:border-amber-500 p-6 shadow-sm hover:shadow-xl transition-all duration-300 aspect-square flex flex-col items-center justify-center text-center">
+                <div class="w-20 h-20 bg-amber-50 group-hover:bg-white/20 text-amber-500 group-hover:text-indigo-950 rounded-2xl flex items-center justify-center text-4xl mb-4 transition">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                </div>
+                <span class="text-lg font-bold text-indigo-950 group-hover:text-indigo-950 transition">Comparador</span>
+                <span class="text-xs text-slate-400 group-hover:text-indigo-950/80 mt-1 transition">Hotéis & Voos</span>
+            </a>
+
+            <a href="divisor.html" class="group bg-white hover:bg-teal-600 rounded-3xl border border-slate-200 hover:border-teal-600 p-6 shadow-sm hover:shadow-xl transition-all duration-300 aspect-square flex flex-col items-center justify-center text-center">
+                <div class="w-20 h-20 bg-teal-50 group-hover:bg-white/20 text-teal-600 group-hover:text-white rounded-2xl flex items-center justify-center text-4xl mb-4 transition">
+                    <i class="fa-solid fa-calculator"></i>
+                </div>
+                <span class="text-lg font-bold text-indigo-950 group-hover:text-white transition">Divisor de Gastos</span>
+                <span class="text-xs text-slate-400 group-hover:text-teal-100 mt-1 transition">Contas em Grupo</span>
+            </a>
+
+        </div>
+    </main>
+
+    <footer class="bg-slate-200 text-slate-400 text-center py-3 text-[11px]">
+        Traveling Ecossistema
+    </footer>
+
+</body>
+</html>
