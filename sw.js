@@ -20,7 +20,7 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
   // Substitua 'SEU-USUARIO' e 'NOME-DO-REPO' pelos seus dados do GitHub
-  const urlProjeto = 'https://SEU-USUARIO.github.io/NOME-DO-REPO/';
+  const urlProjeto = 'https://lucas02-pixel.github.io/Planner-de-Viagem-Pro/';
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
