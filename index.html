@@ -42,6 +42,14 @@
                 </div>
             </div>
             
+            <!-- Widget Google Tradutor -->
+<script type="text/javascript">
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({pageLanguage: 'pt'}, 'google_translate_element');
+}
+    
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
             <!-- Controles do Header -->
             <div class="flex items-center gap-2 w-full md:w-auto flex-wrap">
                 <select id="tripSelect" onchange="changeTrip()" class="bg-indigo-800 text-white border border-indigo-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 flex-grow md:flex-grow-0">
@@ -65,17 +73,7 @@
                     <i class="fa-solid fa-calculator"></i> <span class="translate-text">Comparador de preços</span>
                 </button>
 
-                <!-- Seletor de Idioma -->
-                <div class="relative inline-block">
-                    <select id="languageSelect" onchange="translatePage(this.value)" class="bg-purple-800 hover:bg-purple-700 text-white border border-purple-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 font-semibold cursor-pointer transition">
-                        <option value="pt">🌐 PT (Português)</option>
-                        <option value="en">🌐 EN (English)</option>
-                        <option value="es">🌐 ES (Español)</option>
-                        <option value="fr">🌐 FR (Français)</option>
-                    </select>
-                </div>
-            </div>
-        </div>
+               
     </header>
 
     <!-- Sub-header Dados da Viagem -->
@@ -1306,77 +1304,7 @@
                     `;
                 });
 
-                html += `</div>`;
-                container.innerHTML = html;
-
-            } catch (err) {
-                container.innerHTML = `<p class="text-rose-500 text-sm text-center">Erro ao carregar a previsão do tempo. Verifique a sua ligação.</p>`;
-            }
-        }
-
-        // FUNÇÃO DE TRADUÇÃO COMPLETA E CORRIGIDA
-        const translationCache = {};
-        let currentLanguage = 'pt';
-
-        // Substitua a função translatePage por esta versão:
-async function translatePage(targetLang) {
-    const comparatorBtn = document.getElementById('btnPriceComparator');
-    // Busca o botão de clima (identificado pelo onclick da função)
-    const weatherBtn = document.querySelector('button[onclick="openWeatherModal()"]');
-
-    // 1. Oculta o comparador e o clima em outros idiomas
-    if (targetLang !== 'pt') {
-        if (comparatorBtn) comparatorBtn.style.display = 'none';
-        if (weatherBtn) weatherBtn.style.display = 'none';
-    } else {
-        if (comparatorBtn) comparatorBtn.style.display = 'inline-flex';
-        if (weatherBtn) weatherBtn.style.display = 'inline-flex';
-    }
-
-    // Se voltar para Português, restaura textos originais
-    if (targetLang === 'pt') {
-        document.querySelectorAll('[data-original-text]').forEach(el => {
-            el.innerText = el.getAttribute('data-original-text');
-        });
-        currentLanguage = 'pt';
-        return;
-    }
-
-    // Seleciona elementos de texto marcados com a classe .translate-text ou tags de títulos e labels sem .notranslate
-    const elementsToTranslate = document.querySelectorAll('.translate-text, h1:not(.notranslate), h2:not(.notranslate), h3:not(.notranslate), h4:not(.notranslate), label:not(.notranslate)');
-
-    elementsToTranslate.forEach(async (el) => {
-        if (el.classList.contains('notranslate') || el.getAttribute('translate') === 'no') return;
-
-        if (!el.hasAttribute('data-original-text')) {
-            el.setAttribute('data-original-text', el.innerText.trim());
-        }
-
-        const originalText = el.getAttribute('data-original-text');
-        if (!originalText || originalText.length < 2) return;
-
-        const cacheKey = `${targetLang}_${originalText}`;
-
-        if (translationCache[cacheKey]) {
-            el.innerText = translationCache[cacheKey];
-            return;
-        }
-
-        try {
-            const fallbackRes = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(originalText)}&langpair=pt|${targetLang}`);
-            const fallbackData = await fallbackRes.json();
-            if (fallbackData && fallbackData.responseData && fallbackData.responseData.translatedText) {
-                const translated = fallbackData.responseData.translatedText;
-                translationCache[cacheKey] = translated;
-                el.innerText = translated;
-            }
-        } catch (err) {
-            console.error("Erro na tradução:", err);
-        }
-    });
-
-    currentLanguage = targetLang;
-}
+ 
     </script>
 </body>
 </html>
