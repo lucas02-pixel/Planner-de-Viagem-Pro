@@ -6,7 +6,7 @@
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/lucas02-pixel/Planner-de-Viagem-Pro/refs/heads/main/Traveling.ico" />
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/lucas02-pixel/Planner-de-Viagem-Pro/refs/heads/main/Traveling.ico" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <title>Traveling - Planeje sua viagem</title>
+    <title>Traveling</title>
     <meta name="description" content="Monte seu roteiro de viagem de forma simples e descomplicada. O Traveling salva tudo direto no seu navegador: sem precisar de login, sem criar conta e 100% privado.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -1318,60 +1318,65 @@
         const translationCache = {};
         let currentLanguage = 'pt';
 
-        async function translatePage(targetLang) {
-            const comparatorBtn = document.getElementById('btnPriceComparator');
+        // Substitua a função translatePage por esta versão:
+async function translatePage(targetLang) {
+    const comparatorBtn = document.getElementById('btnPriceComparator');
+    // Busca o botão de clima (identificado pelo onclick da função)
+    const weatherBtn = document.querySelector('button[onclick="openWeatherModal()"]');
 
-            // 1. Oculta o comparador de preços em outros idiomas
-            if (targetLang !== 'pt') {
-                if (comparatorBtn) comparatorBtn.style.display = 'none';
-            } else {
-                if (comparatorBtn) comparatorBtn.style.display = 'inline-flex';
-            }
+    // 1. Oculta o comparador e o clima em outros idiomas
+    if (targetLang !== 'pt') {
+        if (comparatorBtn) comparatorBtn.style.display = 'none';
+        if (weatherBtn) weatherBtn.style.display = 'none';
+    } else {
+        if (comparatorBtn) comparatorBtn.style.display = 'inline-flex';
+        if (weatherBtn) weatherBtn.style.display = 'inline-flex';
+    }
 
-            // Se voltar para Português, restaura textos originais
-            if (targetLang === 'pt') {
-                document.querySelectorAll('[data-original-text]').forEach(el => {
-                    el.innerText = el.getAttribute('data-original-text');
-                });
-                currentLanguage = 'pt';
-                return;
-            }
+    // Se voltar para Português, restaura textos originais
+    if (targetLang === 'pt') {
+        document.querySelectorAll('[data-original-text]').forEach(el => {
+            el.innerText = el.getAttribute('data-original-text');
+        });
+        currentLanguage = 'pt';
+        return;
+    }
 
-            // Seleciona elementos de texto marcados com a classe .translate-text ou tags de títulos e labels sem .notranslate
-            const elementsToTranslate = document.querySelectorAll('.translate-text, h1:not(.notranslate), h2:not(.notranslate), h3:not(.notranslate), h4:not(.notranslate), label:not(.notranslate)');
+    // Seleciona elementos de texto marcados com a classe .translate-text ou tags de títulos e labels sem .notranslate
+    const elementsToTranslate = document.querySelectorAll('.translate-text, h1:not(.notranslate), h2:not(.notranslate), h3:not(.notranslate), h4:not(.notranslate), label:not(.notranslate)');
 
-            elementsToTranslate.forEach(async (el) => {
-                if (el.classList.contains('notranslate') || el.getAttribute('translate') === 'no') return;
+    elementsToTranslate.forEach(async (el) => {
+        if (el.classList.contains('notranslate') || el.getAttribute('translate') === 'no') return;
 
-                if (!el.hasAttribute('data-original-text')) {
-                    el.setAttribute('data-original-text', el.innerText.trim());
-                }
-
-                const originalText = el.getAttribute('data-original-text');
-                if (!originalText || originalText.length < 2) return;
-
-                const cacheKey = `${targetLang}_${originalText}`;
-
-                if (translationCache[cacheKey]) {
-                    el.innerText = translationCache[cacheKey];
-                    return;
-                }
-
-                try {
-                    const fallbackRes = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(originalText)}&langpair=pt|${targetLang}`);
-                    const fallbackData = await fallbackRes.json();
-                    if (fallbackData && fallbackData.responseData && fallbackData.responseData.translatedText) {
-                        const translated = fallbackData.responseData.translatedText;
-                        translationCache[cacheKey] = translated;
-                        el.innerText = translated;
-                    }
-                } catch (err) {
-                    console.error("Erro na tradução:", err);
-                }
-            });
-
-            currentLanguage = targetLang;
+        if (!el.hasAttribute('data-original-text')) {
+            el.setAttribute('data-original-text', el.innerText.trim());
         }
+
+        const originalText = el.getAttribute('data-original-text');
+        if (!originalText || originalText.length < 2) return;
+
+        const cacheKey = `${targetLang}_${originalText}`;
+
+        if (translationCache[cacheKey]) {
+            el.innerText = translationCache[cacheKey];
+            return;
+        }
+
+        try {
+            const fallbackRes = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(originalText)}&langpair=pt|${targetLang}`);
+            const fallbackData = await fallbackRes.json();
+            if (fallbackData && fallbackData.responseData && fallbackData.responseData.translatedText) {
+                const translated = fallbackData.responseData.translatedText;
+                translationCache[cacheKey] = translated;
+                el.innerText = translated;
+            }
+        } catch (err) {
+            console.error("Erro na tradução:", err);
+        }
+    });
+
+    currentLanguage = targetLang;
+}
     </script>
 </body>
 </html>
