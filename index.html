@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/lucas02-pixel/Planner-de-Viagem-Pro/refs/heads/main/Traveling.ico" />
-    
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/lucas02-pixel/Planner-de-Viagem-Pro/refs/heads/main/Traveling.ico" />
-  
-  <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <title>Traveling - Planeje sua viagem</title>
-     <meta name="description" content="Monte seu roteiro de viagem de forma simples e descomplicada. O Traveling salva tudo direto no seu navegador: sem precisar de login, sem criar conta e 100% privado.">
+    <meta name="description" content="Monte seu roteiro de viagem de forma simples e descomplicada. O Traveling salva tudo direto no seu navegador: sem precisar de login, sem criar conta e 100% privado.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -32,75 +30,50 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
 
-    <!-- Header -->
+    <!-- Header Limpo sem Duplicações -->
     <header class="bg-indigo-700 text-white shadow-lg">
         <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <!-- Logo Protegida contra tradução -->
             <div class="flex items-center gap-3">
                 <i class="fa-solid fa-plane-departure text-2xl text-yellow-400"></i>
                 <div>
-                    <h1 class="text-xl font-bold tracking-wide">Traveling</h1>
-                    <p class="text-xs text-indigo-200">Sua viagem na palma da sua mão.</p>
+                    <h1 class="text-xl font-bold tracking-wide notranslate" translate="no">Traveling</h1>
+                    <p class="text-xs text-indigo-200 translate-text">Sua viagem na palma da sua mão.</p>
                 </div>
             </div>
             
-            
-            <!-- Selector de Viagem / Nova Viagem -->
+            <!-- Controles do Header -->
             <div class="flex items-center gap-2 w-full md:w-auto flex-wrap">
                 <select id="tripSelect" onchange="changeTrip()" class="bg-indigo-800 text-white border border-indigo-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 flex-grow md:flex-grow-0">
                     <!-- Opções geradas via JS -->
                 </select>
+                
                 <button onclick="openNewTripModal()" class="bg-yellow-400 hover:bg-yellow-300 text-indigo-900 font-bold px-3 py-2 rounded-lg text-sm flex items-center gap-1 transition shadow">
-                    <i class="fa-solid fa-plus"></i> Nova
+                    <i class="fa-solid fa-plus"></i> <span class="translate-text">Nova</span>
                 </button>
+                
                 <button onclick="deleteCurrentTrip()" title="Excluir Viagem Atual" class="bg-red-500/20 hover:bg-red-500 text-red-200 hover:text-white p-2 rounded-lg text-sm transition">
                     <i class="fa-solid fa-trash"></i>
                 </button>
+                
                 <button onclick="openWeatherModal()" title="Ver Previsão do Tempo" class="bg-sky-500 hover:bg-sky-400 text-white font-bold px-3 py-2 rounded-lg text-sm flex items-center gap-1 transition shadow">
-                    <i class="fa-solid fa-cloud-sun"></i> Clima
+                    <i class="fa-solid fa-cloud-sun"></i> <span class="translate-text">Clima</span>
                 </button>
-                <button onclick="window.open('https://lucas02-pixel.github.io/Planner-de-Viagem-Pro/comparadordepre%C3%A7os.html', '_blank')" title="comparador de preços" class="bg-sky-500 hover:bg-sky-400 text-white font-bold px-3 py-2 rounded-lg text-sm flex items-center gap-1 transition shadow">
-                    <i class="fa-solid fa-calculator"></i> Comparador de preços
+                
+                <!-- Botão Comparador (Ocultado automaticamente em outros idiomas) -->
+                <button id="btnPriceComparator" onclick="window.open('https://lucas02-pixel.github.io/Planner-de-Viagem-Pro/comparadordepre%C3%A7os.html', '_blank')" title="Comparador de preços" class="bg-sky-500 hover:bg-sky-400 text-white font-bold px-3 py-2 rounded-lg text-sm flex items-center gap-1 transition shadow">
+                    <i class="fa-solid fa-calculator"></i> <span class="translate-text">Comparador de preços</span>
                 </button>
-                <!-- Selector de Viagem / Idioma / Ações -->
-<div class="flex items-center gap-2 w-full md:w-auto flex-wrap">
-    <select id="tripSelect" onchange="changeTrip()" class="bg-indigo-800 text-white border border-indigo-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 flex-grow md:flex-grow-0">
-        <!-- Opções geradas via JS -->
-    </select>
-    
-    <button onclick="openNewTripModal()" class="bg-yellow-400 hover:bg-yellow-300 text-indigo-900 font-bold px-3 py-2 rounded-lg text-sm flex items-center gap-1 transition shadow">
-        <i class="fa-solid fa-plus"></i> <span class="translate-text">Nova</span>
-    </button>
-    
-    <button onclick="deleteCurrentTrip()" title="Excluir Viagem Atual" class="bg-red-500/20 hover:bg-red-500 text-red-200 hover:text-white p-2 rounded-lg text-sm transition">
-        <i class="fa-solid fa-trash"></i>
-    </button>
-    
-    <button onclick="openWeatherModal()" title="Ver Previsão do Tempo" class="bg-sky-500 hover:bg-sky-400 text-white font-bold px-3 py-2 rounded-lg text-sm flex items-center gap-1 transition shadow">
-        <i class="fa-solid fa-cloud-sun"></i> <span class="translate-text">Clima</span>
-    </button>
-    
-    <!-- Botão Comparador (Possui ID específico para podermos ocultar/exibir) -->
-    <button id="btnPriceComparator" onclick="window.open('https://lucas02-pixel.github.io/Planner-de-Viagem-Pro/comparadordepre%C3%A7os.html', '_blank')" title="comparador de preços" class="bg-sky-500 hover:bg-sky-400 text-white font-bold px-3 py-2 rounded-lg text-sm flex items-center gap-1 transition shadow">
-        <i class="fa-solid fa-calculator"></i> <span class="translate-text">Comparador de preços</span>
-    </button>
 
-    <!-- NOVO: Seletor de Idioma no lugar do antigo Botão do Word -->
-    <div class="relative inline-block">
-        <select id="languageSelect" onchange="translatePage(this.value)" class="bg-purple-800 hover:bg-purple-700 text-white border border-purple-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 font-semibold cursor-pointer transition">
-            <option value="pt">🌐 PT (Português)</option>
-            <option value="en">🌐 EN (English)</option>
-            <option value="es">🌐 ES (Español)</option>
-            <option value="fr">🌐 FR (Français)</option>
-        </select>
-    </div>
-</div>
-               <div class="flex items-center gap-3">
-    <i class="fa-solid fa-plane-departure text-2xl text-yellow-400"></i>
-    <div>
-        <!-- A classe notranslate impede que a API altere o texto -->
-        <h1 class="text-xl font-bold tracking-wide notranslate" translate="no">Traveling</h1>
-    </div>
-</div>
+                <!-- Seletor de Idioma -->
+                <div class="relative inline-block">
+                    <select id="languageSelect" onchange="translatePage(this.value)" class="bg-purple-800 hover:bg-purple-700 text-white border border-purple-500 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400 font-semibold cursor-pointer transition">
+                        <option value="pt">🌐 PT (Português)</option>
+                        <option value="en">🌐 EN (English)</option>
+                        <option value="es">🌐 ES (Español)</option>
+                        <option value="fr">🌐 FR (Français)</option>
+                    </select>
+                </div>
             </div>
         </div>
     </header>
@@ -112,23 +85,23 @@
         </div>
     </section>
 
-    <!-- Navegação por Abas -->
+    <!-- Navegação por Abas (com tags ajustadas para tradução) -->
     <nav class="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-xs">
         <div class="max-w-6xl mx-auto px-4 flex overflow-x-auto space-x-8 text-sm text-slate-600 custom-scrollbar">
             <button onclick="switchTab('hospedagem')" id="tab-hospedagem" class="py-3 px-1 active-tab flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-hotel text-indigo-500"></i> Hospedagens & Voos
+                <i class="fa-solid fa-hotel text-indigo-500"></i> <span class="translate-text">Hospedagens & Voos</span>
             </button>
             <button onclick="switchTab('passeios')" id="tab-passeios" class="py-3 px-1 flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-ticket text-emerald-500"></i> Passeios & Ingressos
+                <i class="fa-solid fa-ticket text-emerald-500"></i> <span class="translate-text">Passeios & Ingressos</span>
             </button>
             <button onclick="switchTab('roteiro')" id="tab-roteiro" class="py-3 px-1 flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-calendar-days text-amber-500"></i> Roteiro Por Hora
+                <i class="fa-solid fa-calendar-days text-amber-500"></i> <span class="translate-text">Roteiro Por Hora</span>
             </button>
             <button onclick="switchTab('checklist')" id="tab-checklist" class="py-3 px-1 flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-list-check text-rose-500"></i> Checklist da Mala
+                <i class="fa-solid fa-list-check text-rose-500"></i> <span class="translate-text">Checklist da Mala</span>
             </button>
             <button onclick="switchTab('resumo')" id="tab-resumo" class="py-3 px-1 flex items-center gap-2 whitespace-nowrap">
-                <i class="fa-solid fa-file-invoice text-purple-600"></i> Resumo & Exportação
+                <i class="fa-solid fa-file-invoice text-purple-600"></i> <span class="translate-text">Resumo & Exportação</span>
             </button>
         </div>
     </nav>
@@ -140,10 +113,10 @@
         <section id="sec-hospedagem" class="space-y-6">
             <div class="flex justify-between items-center">
                 <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-bed text-indigo-600"></i> Hotéis & Estadias
+                    <i class="fa-solid fa-bed text-indigo-600"></i> <span class="translate-text">Hotéis & Estadias</span>
                 </h2>
                 <button onclick="openHotelModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center gap-1">
-                    <i class="fa-solid fa-plus"></i> Adicionar Hotel
+                    <i class="fa-solid fa-plus"></i> <span class="translate-text">Adicionar Hotel</span>
                 </button>
             </div>
 
@@ -156,10 +129,10 @@
         <section id="sec-passeios" class="space-y-6 hidden">
             <div class="flex justify-between items-center">
                 <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-compass text-emerald-600"></i> Passeios, Reservas & Sites Comprados
+                    <i class="fa-solid fa-compass text-emerald-600"></i> <span class="translate-text">Passeios, Reservas & Sites Comprados</span>
                 </h2>
                 <button onclick="openActivityModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center gap-1">
-                    <i class="fa-solid fa-plus"></i> Adicionar Passeio
+                    <i class="fa-solid fa-plus"></i> <span class="translate-text">Adicionar Passeio</span>
                 </button>
             </div>
 
@@ -168,12 +141,12 @@
                     <table class="w-full text-left border-collapse text-sm">
                         <thead>
                             <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold text-xs uppercase tracking-wider">
-                                <th class="p-3">Passeio / Atividade</th>
-                                <th class="p-3">Data & Hora</th>
-                                <th class="p-3">Site / Onde Comprei</th>
-                                <th class="p-3">Valor</th>
-                                <th class="p-3">Status</th>
-                                <th class="p-3 text-right">Ações</th>
+                                <th class="p-3 translate-text">Passeio / Atividade</th>
+                                <th class="p-3 translate-text">Data & Hora</th>
+                                <th class="p-3 translate-text">Site / Onde Comprei</th>
+                                <th class="p-3 translate-text">Valor</th>
+                                <th class="p-3 translate-text">Status</th>
+                                <th class="p-3 text-right translate-text">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="activityTable" class="divide-y divide-slate-100">
@@ -188,10 +161,10 @@
         <section id="sec-roteiro" class="space-y-6 hidden">
             <div class="flex justify-between items-center">
                 <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-clock text-amber-600"></i> Cronograma do Dia a Dia
+                    <i class="fa-solid fa-clock text-amber-600"></i> <span class="translate-text">Cronograma do Dia a Dia</span>
                 </h2>
                 <button onclick="openScheduleModal()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center gap-1">
-                    <i class="fa-solid fa-plus"></i> Adicionar ao Cronograma
+                    <i class="fa-solid fa-plus"></i> <span class="translate-text">Adicionar ao Cronograma</span>
                 </button>
             </div>
 
@@ -204,14 +177,14 @@
         <section id="sec-checklist" class="space-y-6 hidden">
             <div class="flex justify-between items-center">
                 <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-clipboard-check text-rose-600"></i> Checklist & Mala de Viagem
+                    <i class="fa-solid fa-clipboard-check text-rose-600"></i> <span class="translate-text">Checklist & Mala de Viagem</span>
                 </h2>
                 <div class="flex gap-2">
                     <button onclick="addDefaultChecklist()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold px-3 py-2 rounded-lg transition">
-                        + Itens Padrão
+                        + <span class="translate-text">Itens Padrão</span>
                     </button>
                     <button onclick="openChecklistModal()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition flex items-center gap-1">
-                        <i class="fa-solid fa-plus"></i> Novo Item
+                        <i class="fa-solid fa-plus"></i> <span class="translate-text">Novo Item</span>
                     </button>
                 </div>
             </div>
@@ -220,7 +193,7 @@
                 <!-- Documentos -->
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
                     <h3 class="font-bold text-slate-700 text-sm border-b pb-2 flex items-center justify-between">
-                        <span><i class="fa-solid fa-id-card text-blue-500 mr-2"></i> Documentos & Dinheiro</span>
+                        <span><i class="fa-solid fa-id-card text-blue-500 mr-2"></i> <span class="translate-text">Documentos & Dinheiro</span></span>
                     </h3>
                     <div id="checklist-docs" class="space-y-2"></div>
                 </div>
@@ -228,7 +201,7 @@
                 <!-- Roupas & Calçados -->
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
                     <h3 class="font-bold text-slate-700 text-sm border-b pb-2 flex items-center justify-between">
-                        <span><i class="fa-solid fa-shirt text-indigo-500 mr-2"></i> Roupas & Vestuário</span>
+                        <span><i class="fa-solid fa-shirt text-indigo-500 mr-2"></i> <span class="translate-text">Roupas & Vestuário</span></span>
                     </h3>
                     <div id="checklist-roupas" class="space-y-2"></div>
                 </div>
@@ -236,7 +209,7 @@
                 <!-- Higiene & Eletrônicos -->
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
                     <h3 class="font-bold text-slate-700 text-sm border-b pb-2 flex items-center justify-between">
-                        <span><i class="fa-solid fa-plug text-amber-500 mr-2"></i> Eletrônicos & Outros</span>
+                        <span><i class="fa-solid fa-plug text-amber-500 mr-2"></i> <span class="translate-text">Eletrônicos & Outros</span></span>
                     </h3>
                     <div id="checklist-outros" class="space-y-2"></div>
                 </div>
@@ -247,7 +220,7 @@
         <section id="sec-resumo" class="space-y-6 hidden">
             <div class="flex justify-between items-center">
                 <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-file-invoice text-purple-600"></i> Resumo Geral da Viagem
+                    <i class="fa-solid fa-file-invoice text-purple-600"></i> <span class="translate-text">Resumo Geral da Viagem</span>
                 </h2>
             </div>
 
@@ -258,15 +231,15 @@
 
             <!-- Conteúdo Detalhado do Resumo -->
             <div id="summaryDetails" class="space-y-6 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                <!-- Visão resumida por categorias (Hotéis, Passeios, Cronograma e Mala) -->
+                <!-- Visão resumida por categorias -->
             </div>
 
-            <!-- Botão de Exportação no fim do Resumo -->
+            <!-- Botão de Exportação -->
             <div class="bg-indigo-50 border border-indigo-100 p-6 rounded-xl text-center space-y-3">
-                <h3 class="text-base font-bold text-indigo-900">Deseja ter este planejamento sempre à mão ou impresso?</h3>
-                <p class="text-xs text-indigo-700 max-w-lg mx-auto">Exporte todo o resumo da sua viagem com formatação profissional pronta para o Microsoft Word e PDF.</p>
+                <h3 class="text-base font-bold text-indigo-900 translate-text">Deseja ter este planejamento sempre à mão ou impresso?</h3>
+                <p class="text-xs text-indigo-700 max-w-lg mx-auto translate-text">Exporte todo o resumo da sua viagem com formatação profissional pronta para o Microsoft Word e PDF.</p>
                 <button onclick="exportToWord()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-lg text-sm inline-flex items-center gap-2 transition shadow-md">
-                    <i class="fa-solid fa-file-word text-lg"></i> Exportar Resumo para Word
+                    <i class="fa-solid fa-file-word text-lg"></i> <span class="translate-text">Exportar Resumo para Word</span>
                 </button>
             </div>
         </section>
@@ -278,25 +251,25 @@
     <!-- Modal Nova Viagem -->
     <div id="modalNewTrip" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
-            <h3 class="text-lg font-bold text-slate-800">Criar Nova Viagem</h3>
+            <h3 class="text-lg font-bold text-slate-800 translate-text">Criar Nova Viagem</h3>
             <form onsubmit="saveNewTrip(event)" class="space-y-3">
                 <div>
-                    <label class="text-xs font-semibold text-slate-600">Nome do Destino</label>
+                    <label class="text-xs font-semibold text-slate-600 translate-text">Nome do Destino</label>
                     <input type="text" id="tripName" required placeholder="Ex: Paris, França" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="text-xs font-semibold text-slate-600">Data de Início</label>
+                        <label class="text-xs font-semibold text-slate-600 translate-text">Data de Início</label>
                         <input type="date" id="tripStart" required class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
                     </div>
                     <div>
-                        <label class="text-xs font-semibold text-slate-600">Data de Fim</label>
+                        <label class="text-xs font-semibold text-slate-600 translate-text">Data de Fim</label>
                         <input type="date" id="tripEnd" required class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
                     </div>
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('modalNewTrip')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold">Salvar Viagem</button>
+                    <button type="button" onclick="closeModal('modalNewTrip')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg translate-text">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold translate-text">Salvar Viagem</button>
                 </div>
             </form>
         </div>
@@ -305,40 +278,40 @@
     <!-- Modal Hotel -->
     <div id="modalHotel" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
-            <h3 class="text-lg font-bold text-slate-800">Cadastrar Hotel / Hospedagem</h3>
+            <h3 class="text-lg font-bold text-slate-800 translate-text">Cadastrar Hotel / Hospedagem</h3>
             <form onsubmit="saveHotel(event)" class="space-y-3">
                 <div>
-                    <label class="text-xs font-semibold text-slate-600">Nome do Hotel/Airbnb</label>
+                    <label class="text-xs font-semibold text-slate-600 translate-text">Nome do Hotel/Airbnb</label>
                     <input type="text" id="hotelName" required placeholder="Ex: Hotel Grand Plaza" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-slate-600">Status da Reserva</label>
+                    <label class="text-xs font-semibold text-slate-600 translate-text">Status da Reserva</label>
                     <select id="hotelStatus" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
                         <option value="Reservado">Reservado / Confirmado</option>
                         <option value="A Comprar">Ainda preciso reservar (A Comprar)</option>
                     </select>
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-slate-600">Endereço / Localização</label>
+                    <label class="text-xs font-semibold text-slate-600 translate-text">Endereço / Localização</label>
                     <input type="text" id="hotelAddress" placeholder="Rua, número, bairro" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="text-xs font-semibold text-slate-600">Check-in (Data & Hora)</label>
+                        <label class="text-xs font-semibold text-slate-600 translate-text">Check-in (Data & Hora)</label>
                         <input type="datetime-local" id="hotelCheckin" required class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
                     </div>
                     <div>
-                        <label class="text-xs font-semibold text-slate-600">Check-out (Data & Hora)</label>
+                        <label class="text-xs font-semibold text-slate-600 translate-text">Check-out (Data & Hora)</label>
                         <input type="datetime-local" id="hotelCheckout" required class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
                     </div>
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-slate-600">Código de Reserva / Anotações</label>
+                    <label class="text-xs font-semibold text-slate-600 translate-text">Código de Reserva / Anotações</label>
                     <input type="text" id="hotelNotes" placeholder="Ex: Reserva #12345 - Café da manhã incluso" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-indigo-500 outline-none">
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('modalHotel')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold">Salvar Hotel</button>
+                    <button type="button" onclick="closeModal('modalHotel')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg translate-text">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-semibold translate-text">Salvar Hotel</button>
                 </div>
             </form>
         </div>
@@ -347,28 +320,28 @@
     <!-- Modal Passeio -->
     <div id="modalActivity" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
-            <h3 class="text-lg font-bold text-slate-800">Cadastrar Passeio / Ingresso</h3>
+            <h3 class="text-lg font-bold text-slate-800 translate-text">Cadastrar Passeio / Ingresso</h3>
             <form onsubmit="saveActivity(event)" class="space-y-3">
                 <div>
-                    <label class="text-xs font-semibold text-slate-600">Nome do Passeio / Atraçao</label>
+                    <label class="text-xs font-semibold text-slate-600 translate-text">Nome do Passeio / Atração</label>
                     <input type="text" id="actTitle" required placeholder="Ex: Tour Museu do Louvre" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-emerald-500 outline-none">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="text-xs font-semibold text-slate-600">Data e Hora</label>
+                        <label class="text-xs font-semibold text-slate-600 translate-text">Data e Hora</label>
                         <input type="datetime-local" id="actDateTime" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-emerald-500 outline-none">
                     </div>
                     <div>
-                        <label class="text-xs font-semibold text-slate-600">Valor (R$ ou Moeda)</label>
+                        <label class="text-xs font-semibold text-slate-600 translate-text">Valor (R$ ou Moeda)</label>
                         <input type="text" id="actPrice" placeholder="Ex: 150,00" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-emerald-500 outline-none">
                     </div>
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-slate-600">Site / Plataforma onde comprou</label>
+                    <label class="text-xs font-semibold text-slate-600 translate-text">Site / Plataforma onde comprou</label>
                     <input type="url" id="actUrl" placeholder="https://getyourguide.com/..." class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-emerald-500 outline-none">
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-slate-600">Status do Ingresso</label>
+                    <label class="text-xs font-semibold text-slate-600 translate-text">Status do Ingresso</label>
                     <select id="actStatus" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-emerald-500 outline-none">
                         <option value="Comprado">Comprado / Confirmado</option>
                         <option value="Reservado">Reservado (Pagar no local)</option>
@@ -376,8 +349,8 @@
                     </select>
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('modalActivity')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-semibold">Salvar Passeio</button>
+                    <button type="button" onclick="closeModal('modalActivity')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg translate-text">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-semibold translate-text">Salvar Passeio</button>
                 </div>
             </form>
         </div>
@@ -386,29 +359,29 @@
     <!-- Modal Roteiro Por Hora -->
     <div id="modalSchedule" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
-            <h3 class="text-lg font-bold text-slate-800">Adicionar Item ao Roteiro</h3>
+            <h3 class="text-lg font-bold text-slate-800 translate-text">Adicionar Item ao Roteiro</h3>
             <form onsubmit="saveSchedule(event)" class="space-y-3">
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="text-xs font-semibold text-slate-600">Data</label>
+                        <label class="text-xs font-semibold text-slate-600 translate-text">Data</label>
                         <input type="date" id="schDate" required class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-amber-500 outline-none">
                     </div>
                     <div>
-                        <label class="text-xs font-semibold text-slate-600">Horário</label>
+                        <label class="text-xs font-semibold text-slate-600 translate-text">Horário</label>
                         <input type="time" id="schTime" required class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-amber-500 outline-none">
                     </div>
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-slate-600">Atividade / Compromisso</label>
+                    <label class="text-xs font-semibold text-slate-600 translate-text">Atividade / Compromisso</label>
                     <input type="text" id="schTitle" required placeholder="Ex: Almoço no Restaurante X" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-amber-500 outline-none">
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-slate-600">Detalhes / Dicas Rápidas</label>
+                    <label class="text-xs font-semibold text-slate-600 translate-text">Detalhes / Dicas Rápidas</label>
                     <textarea id="schNotes" rows="2" placeholder="Ex: Pedir mesa na varanda, levar casaco..." class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('modalSchedule')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 text-sm bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-semibold">Salvar no Cronograma</button>
+                    <button type="button" onclick="closeModal('modalSchedule')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg translate-text">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-amber-600 text-white rounded-lg hover:bg-amber-700 font-semibold translate-text">Salvar no Cronograma</button>
                 </div>
             </form>
         </div>
@@ -417,14 +390,14 @@
     <!-- Modal Checklist Item -->
     <div id="modalChecklist" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
-            <h3 class="text-lg font-bold text-slate-800">Adicionar Item à Mala</h3>
+            <h3 class="text-lg font-bold text-slate-800 translate-text">Adicionar Item à Mala</h3>
             <form onsubmit="saveChecklistItem(event)" class="space-y-3">
                 <div>
-                    <label class="text-xs font-semibold text-slate-600">Item</label>
+                    <label class="text-xs font-semibold text-slate-600 translate-text">Item</label>
                     <input type="text" id="chkTitle" required placeholder="Ex: Adaptador de Tomada" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-rose-500 outline-none">
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-slate-600">Categoria</label>
+                    <label class="text-xs font-semibold text-slate-600 translate-text">Categoria</label>
                     <select id="chkCategory" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-rose-500 outline-none">
                         <option value="docs">Documentos & Dinheiro</option>
                         <option value="roupas">Roupas & Vestuário</option>
@@ -432,19 +405,18 @@
                     </select>
                 </div>
                 <div>
-                    <label class="text-xs font-semibold text-slate-600">Status da Compra</label>
+                    <label class="text-xs font-semibold text-slate-600 translate-text">Status da Compra</label>
                     <select id="chkStatus" class="w-full border rounded-lg p-2 text-sm mt-1 focus:ring-2 focus:ring-rose-500 outline-none">
                         <option value="Já Tenho">Já Tenho</option>
                         <option value="A Comprar">Preciso Comprar (A Comprar)</option>
                     </select>
                 </div>
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeModal('modalChecklist')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 text-sm bg-rose-600 text-white rounded-lg hover:bg-rose-700 font-semibold">Adicionar Item</button>
+                    <button type="button" onclick="closeModal('modalChecklist')" class="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg translate-text">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm bg-rose-600 text-white rounded-lg hover:bg-rose-700 font-semibold translate-text">Adicionar Item</button>
                 </div>
             </form>
         </div>
-      
     </div>
 
     <!-- Modal Clima -->
@@ -452,7 +424,7 @@
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
                 <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-cloud-sun text-sky-500"></i> Previsão do Tempo
+                    <i class="fa-solid fa-cloud-sun text-sky-500"></i> <span class="translate-text">Previsão do Tempo</span>
                 </h3>
                 <button onclick="closeModal('modalWeather')" class="text-slate-400 hover:text-slate-600">
                     <i class="fa-solid fa-xmark text-lg"></i>
@@ -463,7 +435,7 @@
             </div>
 
             <div class="flex justify-end pt-2 border-t">
-                <button type="button" onclick="closeModal('modalWeather')" class="px-4 py-2 text-sm bg-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-300">Fechar</button>
+                <button type="button" onclick="closeModal('modalWeather')" class="px-4 py-2 text-sm bg-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-300 translate-text">Fechar</button>
             </div>
         </div>
     </div>
@@ -481,7 +453,6 @@
             }
 
             if (trips.length === 0) {
-                // Se não existir nenhuma viagem, abre o modal automaticamente para criar a primeira
                 openNewTripModal();
             } else {
                 if (!currentTripId || !trips.some(t => t.id === currentTripId)) {
@@ -597,12 +568,11 @@
                 return;
             }
 
-            // Summary
             const startFormatted = trip.startDate ? new Date(trip.startDate + 'T00:00').toLocaleDateString('pt-BR') : 'A definir';
             const endFormatted = trip.endDate ? new Date(trip.endDate + 'T00:00').toLocaleDateString('pt-BR') : 'A definir';
             document.getElementById('tripSummary').innerHTML = `
                 <div>
-                    <span class="text-slate-500">Destino Ativo:</span> <strong class="text-indigo-900 text-base ml-1">${trip.name}</strong>
+                    <span class="text-slate-500 translate-text">Destino Ativo:</span> <strong class="text-indigo-900 text-base ml-1">${trip.name}</strong>
                 </div>
                 <div class="flex gap-4 text-xs font-medium text-slate-600">
                     <span><i class="fa-regular fa-calendar mr-1"></i> ${startFormatted} até ${endFormatted}</span>
@@ -616,9 +586,14 @@
             renderSchedule();
             renderChecklist();
             renderTripSummaryView();
+            
+            // Re-aplica a tradução nos elementos renderizados dinamicamente se não estiver em PT
+            if (currentLanguage !== 'pt') {
+                translatePage(currentLanguage);
+            }
         }
 
-        // --- ABA 1: HOSPEDAGENS ---
+        // ABA 1: HOSPEDAGENS
         function openHotelModal() {
             if (!getCurrentTrip()) return alert('Crie uma viagem primeiro!');
             document.getElementById('modalHotel').classList.remove('hidden');
@@ -659,7 +634,7 @@
             list.innerHTML = '';
 
             if (!trip || trip.hotels.length === 0) {
-                list.innerHTML = `<div class="col-span-2 text-center py-8 text-slate-400 border border-dashed rounded-xl">Nenhuma hospedagem adicionada ainda.</div>`;
+                list.innerHTML = `<div class="col-span-2 text-center py-8 text-slate-400 border border-dashed rounded-xl translate-text">Nenhuma hospedagem adicionada ainda.</div>`;
                 return;
             }
 
@@ -675,26 +650,26 @@
                         <button onclick="deleteHotel('${h.id}')" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
                         <div class="flex items-center gap-2 pr-6">
                             <h3 class="font-bold text-indigo-900 text-base">${h.name}</h3>
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isToBuy ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">${h.status || 'Reservado'}</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isToBuy ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'} translate-text">${h.status || 'Reservado'}</span>
                         </div>
                         <p class="text-xs text-slate-500 mt-1 flex items-center gap-1"><i class="fa-solid fa-location-dot text-rose-500"></i> ${h.address || 'Sem endereço registrado'}</p>
                         
                         <div class="grid grid-cols-2 gap-2 mt-3 bg-slate-50 p-3 rounded-lg text-xs">
                             <div>
-                                <span class="text-slate-400 block font-semibold">Check-in</span>
+                                <span class="text-slate-400 block font-semibold translate-text">Check-in</span>
                                 <span class="text-slate-700 font-bold">${inDt}</span>
                             </div>
                             <div>
-                                <span class="text-slate-400 block font-semibold">Check-out</span>
+                                <span class="text-slate-400 block font-semibold translate-text">Check-out</span>
                                 <span class="text-slate-700 font-bold">${outDt}</span>
                             </div>
                         </div>
 
                         ${isToBuy ? `
                             <div class="mt-3 p-2.5 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between">
-                                <span class="text-xs text-amber-900 font-medium"><i class="fa-solid fa-bag-shopping mr-1 text-amber-600"></i> Ainda não reservou?</span>
+                                <span class="text-xs text-amber-900 font-medium"><i class="fa-solid fa-bag-shopping mr-1 text-amber-600"></i> <span class="translate-text">Ainda não reservou?</span></span>
                                 <a href="${hotelSearchUrl}" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-1.5 rounded-md transition shadow-2xs flex items-center gap-1">
-                                    Pesquisar Reserva <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                    <span class="translate-text">Pesquisar Reserva</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                                 </a>
                             </div>
                         ` : ''}
@@ -705,7 +680,7 @@
             });
         }
 
-        // --- ABA 2: PASSEIOS & INGRESSOS ---
+        // ABA 2: PASSEIOS
         function openActivityModal() {
             if (!getCurrentTrip()) return alert('Crie uma viagem primeiro!');
             document.getElementById('modalActivity').classList.remove('hidden');
@@ -745,7 +720,7 @@
             table.innerHTML = '';
 
             if (!trip || trip.activities.length === 0) {
-                table.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400">Nenhum passeio cadastrado.</td></tr>`;
+                table.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-400 translate-text">Nenhum passeio cadastrado.</td></tr>`;
                 return;
             }
 
@@ -764,7 +739,7 @@
                             ${a.title}
                             ${a.status === 'A Comprar' ? `
                                 <a href="${activitySearchUrl}" target="_blank" class="inline-flex items-center gap-1 text-[11px] text-amber-700 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded border border-amber-200 ml-2 font-normal transition">
-                                    <i class="fa-solid fa-tag"></i> Encontrar Oferta
+                                    <i class="fa-solid fa-tag"></i> <span class="translate-text">Encontrar Oferta</span>
                                 </a>
                             ` : ''}
                         </td>
@@ -773,7 +748,7 @@
                             ${a.url ? `<a href="${a.url}" target="_blank" class="text-indigo-600 hover:underline flex items-center gap-1"><i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> ${urlDomain}</a>` : '<span class="text-slate-400">-</span>'}
                         </td>
                         <td class="p-3 text-xs font-bold text-slate-700">${a.price ? 'R$ ' + a.price : '-'}</td>
-                        <td class="p-3 text-xs"><span class="px-2 py-1 rounded-full font-semibold text-[11px] ${statusBadge}">${a.status}</span></td>
+                        <td class="p-3 text-xs"><span class="px-2 py-1 rounded-full font-semibold text-[11px] ${statusBadge} translate-text">${a.status}</span></td>
                         <td class="p-3 text-right">
                             <button onclick="deleteActivity('${a.id}')" class="text-slate-400 hover:text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>
                         </td>
@@ -782,7 +757,7 @@
             });
         }
 
-        // --- ABA 3: ROTEIRO DIÁRIO ---
+        // ABA 3: ROTEIRO
         function openScheduleModal() {
             if (!getCurrentTrip()) return alert('Crie uma viagem primeiro!');
             document.getElementById('modalSchedule').classList.remove('hidden');
@@ -822,7 +797,7 @@
             timeline.innerHTML = '';
 
             if (!trip || trip.schedule.length === 0) {
-                timeline.innerHTML = `<div class="text-center py-8 text-slate-400 border border-dashed rounded-xl">Nenhum compromisso agendado no cronograma.</div>`;
+                timeline.innerHTML = `<div class="text-center py-8 text-slate-400 border border-dashed rounded-xl translate-text">Nenhum compromisso agendado no cronograma.</div>`;
                 return;
             }
 
@@ -862,7 +837,7 @@
             });
         }
 
-        // --- ABA 4: CHECKLIST ---
+        // ABA 4: CHECKLIST
         function openChecklistModal() {
             if (!getCurrentTrip()) return alert('Crie uma viagem primeiro!');
             document.getElementById('modalChecklist').classList.remove('hidden');
@@ -942,14 +917,14 @@
                 container.innerHTML = '';
                 
                 if (!trip) {
-                    container.innerHTML = `<p class="text-xs text-slate-400 italic">Vazio</p>`;
+                    container.innerHTML = `<p class="text-xs text-slate-400 italic translate-text">Vazio</p>`;
                     return;
                 }
 
                 const items = trip.checklist.filter(c => c.category === cat);
 
                 if (items.length === 0) {
-                    container.innerHTML = `<p class="text-xs text-slate-400 italic">Vazio</p>`;
+                    container.innerHTML = `<p class="text-xs text-slate-400 italic translate-text">Vazio</p>`;
                     return;
                 }
 
@@ -966,7 +941,7 @@
                             
                             ${isToBuy ? `
                                 <a href="${buySearchUrl}" target="_blank" class="text-[10px] bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-2 py-0.5 rounded font-semibold whitespace-nowrap flex items-center gap-1">
-                                    <i class="fa-solid fa-cart-shopping"></i> Comprar
+                                    <i class="fa-solid fa-cart-shopping"></i> <span class="translate-text">Comprar</span>
                                 </a>
                             ` : ''}
 
@@ -977,7 +952,7 @@
             });
         }
 
-        // --- ABA 5: RENDERIZAÇÃO DO RESUMO ---
+        // ABA 5: RESUMO
         function renderTripSummaryView() {
             const cardsContainer = document.getElementById('summaryCards');
             const detailsContainer = document.getElementById('summaryDetails');
@@ -987,11 +962,10 @@
 
             if (!trip) {
                 cardsContainer.innerHTML = '';
-                detailsContainer.innerHTML = '<p class="text-center text-slate-400 py-6">Nenhuma viagem selecionada.</p>';
+                detailsContainer.innerHTML = '<p class="text-center text-slate-400 py-6 translate-text">Nenhuma viagem selecionada.</p>';
                 return;
             }
 
-            // Cálculo total dos passeios
             let totalPasseiosVal = 0;
             trip.activities.forEach(a => {
                 if (a.price) {
@@ -1000,76 +974,67 @@
                 }
             });
 
-            // Quantidade de itens checados na mala
             const totalMala = trip.checklist.length;
             const checadosMala = trip.checklist.filter(c => c.checked).length;
 
-            // Renderiza Cards do topo
             cardsContainer.innerHTML = `
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
-                    <p class="text-xs text-slate-500 font-semibold">Hospedagens</p>
+                    <p class="text-xs text-slate-500 font-semibold translate-text">Hospedagens</p>
                     <p class="text-2xl font-bold text-indigo-700 mt-1">${trip.hotels.length}</p>
                 </div>
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
-                    <p class="text-xs text-slate-500 font-semibold">Passeios Cadastrados</p>
+                    <p class="text-xs text-slate-500 font-semibold translate-text">Passeios Cadastrados</p>
                     <p class="text-2xl font-bold text-emerald-700 mt-1">${trip.activities.length}</p>
                     <p class="text-[11px] text-slate-400 mt-0.5">Est. R$ ${totalPasseiosVal.toFixed(2)}</p>
                 </div>
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
-                    <p class="text-xs text-slate-500 font-semibold">Horários Agendados</p>
+                    <p class="text-xs text-slate-500 font-semibold translate-text">Horários Agendados</p>
                     <p class="text-2xl font-bold text-amber-700 mt-1">${trip.schedule.length}</p>
                 </div>
                 <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs">
-                    <p class="text-xs text-slate-500 font-semibold">Progresso da Mala</p>
+                    <p class="text-xs text-slate-500 font-semibold translate-text">Progresso da Mala</p>
                     <p class="text-2xl font-bold text-rose-700 mt-1">${checadosMala}/${totalMala}</p>
                 </div>
             `;
 
-            // Detalhes em formato consolidado
             const startFormatted = trip.startDate ? new Date(trip.startDate + 'T00:00').toLocaleDateString('pt-BR') : 'A definir';
             const endFormatted = trip.endDate ? new Date(trip.endDate + 'T00:00').toLocaleDateString('pt-BR') : 'A definir';
 
-            let hotelsListHtml = trip.hotels.length > 0 ? trip.hotels.map(h => `<li class="text-xs text-slate-700 font-medium py-1 border-b border-slate-100 flex justify-between"><span>🏨 ${escapeHtml(h.name)}</span> <span class="text-slate-400">${escapeHtml(h.status || 'Reservado')}</span></li>`).join('') : '<p class="text-xs text-slate-400 italic">Nenhum hotel cadastrado</p>';
+            let hotelsListHtml = trip.hotels.length > 0 ? trip.hotels.map(h => `<li class="text-xs text-slate-700 font-medium py-1 border-b border-slate-100 flex justify-between"><span>🏨 ${escapeHtml(h.name)}</span> <span class="text-slate-400 translate-text">${escapeHtml(h.status || 'Reservado')}</span></li>`).join('') : '<p class="text-xs text-slate-400 italic translate-text">Nenhum hotel cadastrado</p>';
             
-            let activitiesListHtml = trip.activities.length > 0 ? trip.activities.map(a => `<li class="text-xs text-slate-700 font-medium py-1 border-b border-slate-100 flex justify-between"><span>🎟️ ${escapeHtml(a.title)}</span> <span class="text-slate-500">${a.price ? 'R$ ' + escapeHtml(a.price) : '-'}</span></li>`).join('') : '<p class="text-xs text-slate-400 italic">Nenhum passeio cadastrado</p>';
+            let activitiesListHtml = trip.activities.length > 0 ? trip.activities.map(a => `<li class="text-xs text-slate-700 font-medium py-1 border-b border-slate-100 flex justify-between"><span>🎟️ ${escapeHtml(a.title)}</span> <span class="text-slate-500">${a.price ? 'R$ ' + escapeHtml(a.price) : '-'}</span></li>`).join('') : '<p class="text-xs text-slate-400 italic translate-text">Nenhum passeio cadastrado</p>';
 
-            let scheduleListHtml = trip.schedule.length > 0 ? trip.schedule.map(s => `<li class="text-xs text-slate-700 font-medium py-1 border-b border-slate-100 flex justify-between"><span>📅 ${s.date ? new Date(s.date + 'T00:00').toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}) : ''} - ${s.time}</span> <span class="font-semibold">${escapeHtml(s.title)}</span></li>`).join('') : '<p class="text-xs text-slate-400 italic">Nenhum compromisso cadastrado</p>';
+            let scheduleListHtml = trip.schedule.length > 0 ? trip.schedule.map(s => `<li class="text-xs text-slate-700 font-medium py-1 border-b border-slate-100 flex justify-between"><span>📅 ${s.date ? new Date(s.date + 'T00:00').toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}) : ''} - ${s.time}</span> <span class="font-semibold">${escapeHtml(s.title)}</span></li>`).join('') : '<p class="text-xs text-slate-400 italic translate-text">Nenhum compromisso cadastrado</p>';
 
             detailsContainer.innerHTML = `
                 <div class="border-b border-slate-100 pb-4">
                     <h3 class="text-base font-bold text-indigo-900 flex items-center gap-2"><i class="fa-solid fa-plane text-yellow-500"></i> ${escapeHtml(trip.name)}</h3>
-                    <p class="text-xs text-slate-500 mt-1">Período: <strong>${startFormatted}</strong> até <strong>${endFormatted}</strong></p>
+                    <p class="text-xs text-slate-500 mt-1"><span class="translate-text">Período:</span> <strong>${startFormatted}</strong> até <strong>${endFormatted}</strong></p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <h4 class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 flex items-center gap-1.5"><i class="fa-solid fa-hotel text-indigo-500"></i> Hotéis & Estadias</h4>
+                        <h4 class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 flex items-center gap-1.5"><i class="fa-solid fa-hotel text-indigo-500"></i> <span class="translate-text">Hotéis & Estadias</span></h4>
                         <ul class="space-y-1">${hotelsListHtml}</ul>
                     </div>
 
                     <div>
-                        <h4 class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 flex items-center gap-1.5"><i class="fa-solid fa-ticket text-emerald-500"></i> Passeios Principais</h4>
+                        <h4 class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 flex items-center gap-1.5"><i class="fa-solid fa-ticket text-emerald-500"></i> <span class="translate-text">Passeios Principais</span></h4>
                         <ul class="space-y-1">${activitiesListHtml}</ul>
                     </div>
 
                     <div>
-                        <h4 class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 flex items-center gap-1.5"><i class="fa-solid fa-clock text-amber-500"></i> Próximos Compromissos</h4>
+                        <h4 class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 flex items-center gap-1.5"><i class="fa-solid fa-clock text-amber-500"></i> <span class="translate-text">Próximos Compromissos</span></h4>
                         <ul class="space-y-1">${scheduleListHtml}</ul>
                     </div>
                 </div>
             `;
         }
 
-        // AUXILIARES
         function closeModal(id) {
             document.getElementById(id).classList.add('hidden');
         }
 
-        // =====================================================================
-        // EXPORTAÇÃO PARA WORD (.doc)
-        // Gera um documento Word bem organizado com todos os dados da viagem
-        // atualmente selecionada: hospedagens, passeios, roteiro e checklist.
-        // =====================================================================
         function escapeHtml(str) {
             if (str === null || str === undefined) return '';
             return String(str)
@@ -1099,7 +1064,6 @@
             const startFormatted = fmtDate(trip.startDate);
             const endFormatted = fmtDate(trip.endDate);
 
-            // --- Seção: Hospedagens ---
             let hotelsHtml = '';
             if (trip.hotels.length === 0) {
                 hotelsHtml = `<p style="color:#94a3b8; font-style:italic;">Nenhuma hospedagem cadastrada.</p>`;
@@ -1137,7 +1101,6 @@
                 });
             }
 
-            // --- Seção: Passeios & Ingressos ---
             let activitiesHtml = '';
             if (trip.activities.length === 0) {
                 activitiesHtml = `<p style="color:#94a3b8; font-style:italic;">Nenhum passeio cadastrado.</p>`;
@@ -1172,7 +1135,6 @@
                 `;
             }
 
-            // --- Seção: Roteiro Por Hora ---
             let scheduleHtml = '';
             if (trip.schedule.length === 0) {
                 scheduleHtml = `<p style="color:#94a3b8; font-style:italic;">Nenhum compromisso agendado no cronograma.</p>`;
@@ -1205,7 +1167,6 @@
                 });
             }
 
-            // --- Seção: Checklist da Mala ---
             const catLabels = { docs: 'Documentos & Dinheiro', roupas: 'Roupas & Vestuário', outros: 'Eletrônicos & Outros' };
             let checklistHtml = '';
             ['docs', 'roupas', 'outros'].forEach(cat => {
@@ -1228,7 +1189,6 @@
                 }
             });
 
-            // --- Monta o documento Word completo (HTML compatível com MS Word) ---
             const docContent = `
                 <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
                 <head>
@@ -1273,7 +1233,6 @@
                     Crie o seu também em: https://lucas02-pixel.github.io/Planner-de-Viagem-Pro/</h2>
                     <h3>traveling - sua viagem na palma da mão</h3>
                 </body>
-                
                 </html>
             `;
 
@@ -1325,7 +1284,7 @@
                 };
 
                 let html = `<div class="w-full text-left mb-2">
-                    <p class="text-xs text-slate-500">Destino encontrado:</p>
+                    <p class="text-xs text-slate-500 translate-text">Destino encontrado:</p>
                     <p class="font-bold text-slate-800">${name}, ${country}</p>
                 </div><div class="w-full space-y-2 max-h-60 overflow-y-auto custom-scrollbar">`;
 
@@ -1340,7 +1299,7 @@
                         <div class="flex items-center justify-between bg-slate-50 p-2.5 rounded-lg border border-slate-100 text-xs">
                             <span class="font-semibold text-slate-700 capitalize w-24">${dtFormatted}</span>
                             <span class="flex items-center gap-1.5 text-slate-600">
-                                <i class="fa-solid ${info.icon}"></i> ${info.desc}
+                                <i class="fa-solid ${info.icon}"></i> <span class="translate-text">${info.desc}</span>
                             </span>
                             <span class="font-bold text-slate-800">${minTemp}°C / ${maxTemp}°C</span>
                         </div>
@@ -1355,88 +1314,64 @@
             }
         }
 
-        // Dicionário de cache de traduções para respostas instantâneas após a primeira tradução
-const translationCache = {};
-let currentLanguage = 'pt';
+        // FUNÇÃO DE TRADUÇÃO COMPLETA E CORRIGIDA
+        const translationCache = {};
+        let currentLanguage = 'pt';
 
-async function translatePage(targetLang) {
-    const comparatorBtn = document.getElementById('btnPriceComparator');
+        async function translatePage(targetLang) {
+            const comparatorBtn = document.getElementById('btnPriceComparator');
 
-    // 1. Regra do Comparador de Preços: Esconde se não for Português
-    if (targetLang !== 'pt') {
-        if (comparatorBtn) comparatorBtn.style.display = 'none';
-    } else {
-        if (comparatorBtn) comparatorBtn.style.display = 'inline-flex';
-    }
+            // 1. Oculta o comparador de preços em outros idiomas
+            if (targetLang !== 'pt') {
+                if (comparatorBtn) comparatorBtn.style.display = 'none';
+            } else {
+                if (comparatorBtn) comparatorBtn.style.display = 'inline-flex';
+            }
 
-    // Se voltar para português e já estava traduzido, recarrega os textos originais salvos
-    if (targetLang === 'pt') {
-        document.querySelectorAll('[data-original-text]').forEach(el => {
-            el.innerText = el.getAttribute('data-original-text');
-        });
-        currentLanguage = 'pt';
-        return;
-    }
+            // Se voltar para Português, restaura textos originais
+            if (targetLang === 'pt') {
+                document.querySelectorAll('[data-original-text]').forEach(el => {
+                    el.innerText = el.getAttribute('data-original-text');
+                });
+                currentLanguage = 'pt';
+                return;
+            }
 
-    // Seleciona todos os elementos de texto da página ignorando a marca 'Traveling'
-    const elementsToTranslate = document.querySelectorAll('h1:not(.notranslate), h2:not(.notranslate), h3:not(.notranslate), h4:not(.notranslate), p:not(.notranslate), span.translate-text, button:not(.notranslate) span.translate-text, label:not(.notranslate)');
+            // Seleciona elementos de texto marcados com a classe .translate-text ou tags de títulos e labels sem .notranslate
+            const elementsToTranslate = document.querySelectorAll('.translate-text, h1:not(.notranslate), h2:not(.notranslate), h3:not(.notranslate), h4:not(.notranslate), label:not(.notranslate)');
 
-    elementsToTranslate.forEach(async (el) => {
-        // Ignora se for a marca Traveling ou estiver vazio
-        if (el.classList.contains('notranslate') || el.getAttribute('translate') === 'no') return;
+            elementsToTranslate.forEach(async (el) => {
+                if (el.classList.contains('notranslate') || el.getAttribute('translate') === 'no') return;
 
-        // Salva o texto original em um atributo
-        if (!el.hasAttribute('data-original-text')) {
-            el.setAttribute('data-original-text', el.innerText.trim());
-        }
+                if (!el.hasAttribute('data-original-text')) {
+                    el.setAttribute('data-original-text', el.innerText.trim());
+                }
 
-        const originalText = el.getAttribute('data-original-text');
-        if (!originalText || originalText.length < 2) return;
+                const originalText = el.getAttribute('data-original-text');
+                if (!originalText || originalText.length < 2) return;
 
-        const cacheKey = `${targetLang}_${originalText}`;
+                const cacheKey = `${targetLang}_${originalText}`;
 
-        // Se já foi traduzido antes, usa o cache
-        if (translationCache[cacheKey]) {
-            el.innerText = translationCache[cacheKey];
-            return;
-        }
+                if (translationCache[cacheKey]) {
+                    el.innerText = translationCache[cacheKey];
+                    return;
+                }
 
-        // Chamada à API gratuita de alta precisão (LibreTranslate / Engine IA)
-        try {
-            const response = await fetch("https://libretranslate.de/translate", {
-                method: "POST",
-                body: JSON.stringify({
-                    q: originalText,
-                    source: "pt",
-                    target: targetLang,
-                    format: "text"
-                }),
-                headers: { "Content-Type": "application/json" }
+                try {
+                    const fallbackRes = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(originalText)}&langpair=pt|${targetLang}`);
+                    const fallbackData = await fallbackRes.json();
+                    if (fallbackData && fallbackData.responseData && fallbackData.responseData.translatedText) {
+                        const translated = fallbackData.responseData.translatedText;
+                        translationCache[cacheKey] = translated;
+                        el.innerText = translated;
+                    }
+                } catch (err) {
+                    console.error("Erro na tradução:", err);
+                }
             });
 
-            const data = await response.json();
-            if (data && data.translatedText) {
-                translationCache[cacheKey] = data.translatedText;
-                el.innerText = data.translatedText;
-            }
-        } catch (error) {
-            // Fallback secundário de alta velocidade via MyMemory API se a principal oscilar
-            try {
-                const fallbackRes = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(originalText)}&langpair=pt|${targetLang}`);
-                const fallbackData = await fallbackRes.json();
-                if (fallbackData && fallbackData.responseData && fallbackData.responseData.translatedText) {
-                    const translated = fallbackData.responseData.translatedText;
-                    translationCache[cacheKey] = translated;
-                    el.innerText = translated;
-                }
-            } catch (err) {
-                console.error("Erro na tradução do elemento:", err);
-            }
+            currentLanguage = targetLang;
         }
-    });
-
-    currentLanguage = targetLang;
-}
     </script>
 </body>
 </html>
