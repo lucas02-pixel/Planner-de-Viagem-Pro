@@ -1200,6 +1200,43 @@
     renderCurrentTrip();
   }
 });
+       
+// Variáveis para rastrear o toque
+let touchStartX = 0;
+let touchEndX = 0;
+const tabs = ['hospedagem', 'passeios', 'roteiro', 'checklist'];
+
+// Elemento que receberá o gesto (toda a área do conteúdo)
+const mainContent = document.querySelector('main');
+
+mainContent.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+}, false);
+
+mainContent.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+}, false);
+
+function handleSwipe() {
+    const swipeThreshold = 50; // Distância mínima para considerar um swipe
+    const diff = touchEndX - touchStartX;
+
+    if (Math.abs(diff) > swipeThreshold) {
+        // Encontra a aba ativa atual
+        const currentActive = tabs.find(t => !document.getElementById('sec-' + t).classList.contains('hidden'));
+        const currentIndex = tabs.indexOf(currentActive);
+
+        if (diff > 0) {
+            // Swipe para a direita (voltar aba)
+            if (currentIndex > 0) switchTab(tabs[currentIndex - 1]);
+        } else {
+            // Swipe para a esquerda (avançar aba)
+            if (currentIndex < tabs.length - 1) switchTab(tabs[currentIndex + 1]);
+        }
+    }
+}
+
     </script>
 </body>
 </html>
